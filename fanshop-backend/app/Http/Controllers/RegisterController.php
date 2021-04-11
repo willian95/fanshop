@@ -24,7 +24,7 @@ class RegisterController extends Controller
             $user->registerHash = $registerHash;
             $user->save();
 
-            //$this->sendRegisterEmail($user);
+            $this->sendRegisterEmail($user);
 
             return response()->json(["success" => true, "msg" => "Usuario registrado exitosamente"]);
 
@@ -42,7 +42,7 @@ class RegisterController extends Controller
         $to_name = $user->name;
         $to_email = $user->email;
 
-        \Mail::send("emails.verifyMail", $data, function($message) use ($to_name, $to_email) {
+        \Mail::send("emails.register", $data, function($message) use ($to_name, $to_email) {
 
             $message->to($to_email, $to_name)->subject("¡Valida tu correo!");
             $message->from( env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));

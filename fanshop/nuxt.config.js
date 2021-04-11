@@ -70,6 +70,14 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     baseURL: 'http://localhost:8000/api',
+    //baseURL: 'http://fanshop.sytes.net/api',
+  },
+
+  publicRuntimeConfig: {
+    axios: {
+      //browserBaseURL: "http://fanshop.sytes.net/api"
+      browserBaseURL: "http://localhost:8000/api"
+    }
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
