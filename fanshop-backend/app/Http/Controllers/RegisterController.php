@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Str;
+use Auth;
+use Carbon\Carbon;
 
 class RegisterController extends Controller
 {
@@ -48,6 +50,38 @@ class RegisterController extends Controller
             $message->from( env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
 
         });
+
+    }
+
+    function resendEmail(Request $request){
+
+        $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
+        $user = User::find($auth->id);
+
+        if($user->register_hash == null){
+            $this->sendRegisterEmail($user);
+            return response()->json(["success" => true, "msg" => "Email reenviado"]);
+        }else{
+            return response()->json(["success" => false, "msg" => "Email validado anteriormente"]);
+        }
+
+    }
+
+    function verify(Request $request){
+
+        try{
+
+            $user = User::where("registerHash", $request->hash)->firstOrFail();
+            $user->registerHash = null;
+            $user->email_verified_at = Carbon::now();
+            $user->update();
+            
+            return redirect()->away(env('FRONTEND_URL').'/login');
+
+        }catch(\Exception $e){
+            
+            dd($e);
+        }
 
     }
 

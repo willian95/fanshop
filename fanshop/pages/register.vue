@@ -105,15 +105,16 @@
                 try{
 
                     let res = await this.$axios.post("/register", {email: this.email, name: this.name, lastname: this.lastname, password: this.password, password_confirmation: this.passwordConfirmation})
-
+                
                     if(res.data.success == true){
 
                         this.$swal({
                             icon: 'success',
                             text: res.data.msg,
+                        }).then(res => {
+                            this.clearInputs()
+                            this.$router.push("login")
                         })
-                        this.clearInputs()
-                        this.$route.push("home")
 
                     }else{
                         this.$swal({
@@ -123,6 +124,7 @@
                     }
 
                 }catch(err){
+    
                     this.$swal({
                         icon: 'error',
                         toast:true,

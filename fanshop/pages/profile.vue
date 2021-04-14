@@ -6,6 +6,10 @@
 
         <div class="car">
             <div class="card-body">
+                <div class="text-center" v-if="emailVerifiedAt == null">
+                    <p>Aún no validas tu correo.</p>
+                    <button class="btn btn-info" @click="resendEmail()">Reenviar</button>
+                </div>
                 <div class='title-general title-general2'>
                     <h1>Perfil</h1>
                 </div>
@@ -18,7 +22,7 @@
                         </div>
                         <div class="form-group">
 
-                            <input placeholder="Email" type="text" autocomplete="off" class="form-control" id="email" aria-describedby="emailHelp" v-model="email">
+                            <input placeholder="Email" disabled type="text" autocomplete="off" class="form-control" id="email" aria-describedby="emailHelp" v-model="email">
                             <ErrorShow :error="errors" :name="'email'"/>
 
                         </div>
@@ -99,6 +103,7 @@
 
             return{
                 errors:[],
+                emailVerifiedAt:this.$auth.user.email_verified_at,
                 name:this.$auth.user.name,
                 lastname:this.$auth.user.lastname,
                 address:this.$auth.user.address == "null" ? '': this.$auth.user.address,
@@ -122,6 +127,30 @@
             passwordConfirmationInputChange(){
 
                 this.passwordConfirmationInputType == 'password' ? this.passwordConfirmationInputType = 'text' : this.passwordConfirmationInputType = "password"
+
+            },
+            async resendEmail(){
+
+                this.loading = true
+                let res = await this.$axios.post("resend-register-email")
+                
+                if(res.data.success == true){
+
+                    this.$swal({
+                        text: res.data.msg,
+                        icon:"success"
+                    })
+
+                }else{
+
+                    this.$swal({
+                        text: res.data.msg,
+                        icon:"error"
+                    })
+
+                }
+
+                this.loading = false
 
             },
             async update(){

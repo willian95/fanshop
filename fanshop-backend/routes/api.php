@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PasswordRestoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,10 @@ Route::post("product", [ProductController::class, "info"]);
 Route::post('login', [LoginController::class, 'login']);
 Route::post('register', [RegisterController::class, "register"]);
 
+Route::post("restore-password", [PasswordRestoreController::class, "restore"]);
+
+Route::post("update-password", [PasswordRestoreController::class, "updatePassword"]);
+
 Route::group([
 
     'middleware' => 'api',
@@ -41,6 +46,8 @@ Route::group([
     Route::post('logout', [LoginController::class, 'logout']);
     Route::post('refresh', [LoginController::class, 'refresh']);
     Route::get('user', [LoginController::class, 'me']);
+
+    Route::post("resend-register-email", [RegisterController::class, "resendEmail"]);
 
     Route::post("profile/update", [ProfileController::class, 'update']);
 

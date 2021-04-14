@@ -24,6 +24,16 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'mercadopago' => [
+
+        "base_url" => env("MERCADOPAGO_BASE_URL"),
+        "key" => env("MERCADOPAGO_KEY"),
+        "secret" => env("MERCADOPAGO_SECRET"),
+        "base_currency" => "PEN",
+        "class" => App\Services\MercadoPagoService::class,
+
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

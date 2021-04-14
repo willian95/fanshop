@@ -33,6 +33,10 @@
                                 <NuxtLink :to="{ path: '/register'}">¿No posees cuenta? Registrate</NuxtLink>
                             </p>
 
+                            <p class="text-center">
+                                <NuxtLink :to="{ path: '/forgot-password'}">¿Olvidaste tu contraseña?</NuxtLink>
+                            </p>
+
                         </form>
                     </div>
                 </div>
