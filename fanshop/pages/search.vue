@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-12">
 
-                <Paginator :pages="pages" :setPage="setPage" />
+                <Paginator :pages="pages" :setPage="setPage" :isSearch="true"/>
 
             </div>
 
@@ -61,33 +61,37 @@ export default {
             
             this.$store.dispatch("storeSearchClicked", {value:false})
             this.search = this.$store.getters["getSearch"]
+            
             this.searchProducts(this.search)
 
         },
         async searchProducts(search){
+            
+            if(search.query != ""){
 
-            this.loading = true
+                this.loading = true
             
-            let res = await this.$axios.get("/search?queryWord="+search.query+"&page="+search.page+"&type="+search.type)
-            if(res.data.products){
-                //console.log(res.data.products)
-                this.products = res.data.products.searchProductDetails
-                if(search.type == "amazon"){
-                 
-                    this.pages = Math.ceil(res.data.products.resultCount / res.data.products.numberOfProducts)
-                }/*else if(search.type == "walmart"){
-                    this.pages = parseInt(res.data.products.totalResults)
-                }*/
+                let res = await this.$axios.get("/search?queryWord="+search.query+"&page="+search.page+"&type="+search.type)
+                if(res.data.products){
+                    //console.log(res.data.products)
+                    this.products = res.data.products.searchProductDetails
+                    if(search.type == "amazon"){
+                    
+                        this.pages = Math.ceil(res.data.products.resultCount / res.data.products.numberOfProducts)
+                    }/*else if(search.type == "walmart"){
+                        this.pages = parseInt(res.data.products.totalResults)
+                    }*/
+                    
+                }
                 
+                this.loading = false
+
             }
-            
-            this.loading = false
 
         },
         setPage(page){
 
             this.search.page = page
-  
             this.fetchProducts(this.search)
 
         }

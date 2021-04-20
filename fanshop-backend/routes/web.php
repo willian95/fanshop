@@ -21,3 +21,6 @@ Route::get('/', function () {
 
 Route::get("/register/validate", [RegisterController::class, "verify"]);
 Route::get("/password/validate", [PasswordRestoreController::class, "verify"]);
+
+Route::view("checkout/success", "checkout.success")->name("checkout.success");
+Route::view("checkout/failure", "checkout.failure")->name("checkout.failure");

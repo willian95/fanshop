@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Configuration;
 
 class ProductController extends Controller
 {
@@ -17,7 +18,7 @@ class ProductController extends Controller
                 $response = $this->amazonProductInfo($request->id);
             }
 
-            return response()->json($response);
+            return response()->json(["product" => $response, "configuration" => Configuration::find(1)]);
         }
         catch(\Exception $e){
             return response()->json(["err" => $e->getMessage()]);

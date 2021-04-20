@@ -22,7 +22,7 @@ class RoleSeeder extends Seeder
             $role->save();
         }
 
-        else if(Role::where("id", 2)->count() == 0){
+        if(Role::where("id", 2)->count() == 0){
             $role = new Role;
             $role->id = 2;
             $role->name = "Usuario";

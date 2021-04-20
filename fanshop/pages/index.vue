@@ -22,7 +22,7 @@
 
         <AboutUs />
 
-        <!--<HighlightedProducts :title="'Productos destacados'" />-->
+        <HighlightedProducts :title="'Productos destacados'" />
 
         <Advertisement />
 

@@ -18,7 +18,7 @@
 								<img class="icon-buscador" src="/img/search.png" alt="" />
 								<img class="icon-logo" src="/img/Amazon_logo.png" alt="" />
 							</button>
-							<button type="button" @click="querySearch('walmart')">
+							<button type="button" @click="querySearch('walmart')" style="visibility: hidden;">
 								<img class="icon-buscador" src="/img/search.png" alt="" />
 								<img class="icon-logo icon-logo_wal" src="/img/walmart_logo.png" alt="" />
 							</button>
@@ -53,9 +53,16 @@
 								<NuxtLink :to="{ path: '/profile'}">{{ $auth.user.name }}</NuxtLink>
 
 							</li>
+							<li class="nav-item mr-5" v-if="isAuthenticated && $auth.user.role_id == 2">
+								<NuxtLink :to="{ path: '/purchases'}">Compras</NuxtLink>
+
+							</li>
+							<li class="nav-item mr-5" v-if="isAuthenticated && $auth.user.role_id == 1">
+								<NuxtLink :to="{ path: '/admin/dashboard'}">Admin panel</NuxtLink>
+
+							</li>
 							<li class="nav-item mr-5" v-if="isAuthenticated">
 								<button class="btn btn-info" @click="logout()">Cerrar sesión</button>
-
 							</li>
 							<li class="nav-item" v-if="!isAuthenticated">
 								<NuxtLink :to="{ path: '/register'}" class="nav-link"><i class="fas fa-user fas-icon icon-sesion"></i>Registrar</NuxtLink>

@@ -46,7 +46,7 @@
                 <div class="brand flex-column-auto" id="kt_brand">
                     <!--begin::Logo-->
                     <a href="#">
-                        <img alt="Logo" src="http://jmpfront.sytes.net/images/iso.png" style="filter: invert(1); width: 100px;" />
+                        <img alt="Logo" src="/img/logo.png" style="filter: invert(1); width: 100px;" />
                     </a>
                 </div>
                 <!--end::Brand-->
@@ -65,25 +65,19 @@
                             </li>
 
                             <li class="menu-item" aria-haspopup="true">
-                                <a href="#" class="menu-link">
+                                <NuxtLink :to="{ path:'sales' }" class="menu-link">
                                     <i class="menu-icon flaticon-user-add"></i>
-                                    <span class="menu-text">Vacantes</span>
-                                </a>
+                                    <span class="menu-text">Ventas</span>
+                                </NuxtLink>
                             </li>
 
                             <li class="menu-item" aria-haspopup="true">
-                                <a href="#" class="menu-link">
-                                    <i class="menu-icon flaticon-file-1"></i>
-                                    <span class="menu-text">Recursos</span>
-                                </a>
+                                <NuxtLink :to="{ path:'/' }" class="menu-link">
+                                    <i class="menu-icon flaticon-user-add"></i>
+                                    <span class="menu-text">Volver a la página</span>
+                                </NuxtLink>
                             </li>
 
-                            <li class="menu-item" aria-haspopup="true">
-                                <a href="#" class="menu-link">
-                                    <i class="menu-icon flaticon2-chat-1"></i>
-                                    <span class="menu-text">Propuestas</span>
-                                </a>
-                            </li>
 
                             
                         </ul>
@@ -116,7 +110,7 @@
                             <div class="topbar-item">
                                 <div class="btn btn-icon w-auto btn-clean d-flex align-items-center btn-lg px-2" id="kt_quick_user_toggle" onclick="toggleUserOptions()">
                                     <span class="text-muted font-weight-bold font-size-base d-none d-md-inline mr-1">Hello,</span>
-                                    <span class="text-dark-50 font-weight-bolder font-size-base d-none d-md-inline mr-3">#</span>
+                                    <span class="text-dark-50 font-weight-bolder font-size-base d-none d-md-inline mr-3">{{ $auth.user.name }}</span>
                                     <!--<span class="symbol symbol-35 symbol-light-success">
                                         <span class="symbol-label font-size-h5 font-weight-bold"></span>
                                     </span>-->
@@ -145,22 +139,7 @@
                     
                 </div>
                 <!--end::Content-->
-                <!--begin::Footer-->
-                <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
-                    <!--begin::Container-->
-                    <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
-                        <!--begin::Copyright-->
-                        <div class="text-dark text-center" style="width: 100%;">
-                            <span class="text-muted font-weight-bold mr-2">2020 - 2021©</span>
-                            <a href="h#" target="_blank" class="text-dark-75 text-hover-primary">JMP Copyright</a>
-                        </div>
-                        <!--end::Copyright-->
-                        <!--begin::Nav-->
-                        <!--end::Nav-->
-                    </div>
-                    <!--end::Container-->
-                </div>
-                <!--end::Footer-->
+                
             </div>
             <!--end::Wrapper-->
         </div>
@@ -178,6 +157,7 @@
 			link: [
 			{ rel: 'stylesheet', href: 'css/style.bundle.css' }, 
 			]
-		}
+		},
+        middleware: 'auth',
 	}
 </script>

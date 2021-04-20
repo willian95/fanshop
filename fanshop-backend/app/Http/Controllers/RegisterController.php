@@ -24,6 +24,7 @@ class RegisterController extends Controller
             $user->lastname = $request->lastname;
             $user->password = bcrypt($request->password);
             $user->registerHash = $registerHash;
+            $user->role_id = 2;
             $user->save();
 
             $this->sendRegisterEmail($user);

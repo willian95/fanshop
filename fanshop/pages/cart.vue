@@ -21,7 +21,7 @@
                   				</tr>
                 			</thead>
                 			<tbody>
-								<CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="eraseProduct" />
+								<CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="eraseProduct" :showErase="true" :updateAmount="updateProductAmount" :showUpdateAmount="true" />
 
                 			</tbody>
               			</table>
@@ -57,22 +57,26 @@
                 			</div>-->
                 			<div class="pedido-item">
                   				<p>Total</p>
-                  				<span>USD {{ total[0] }}</span>
+                  				<span>USD {{ total }}</span>
+                			</div>
+							<div class="pedido-item">
+                  				<p>Total</p>
+                  				<span>S. {{ Math.ceil(total * 3.63) }}</span>
                 			</div>
 
-                			<span class="metodo-img" style="align-items: flex-end">
-                  				<strong></strong>
-								<img src="assets/img/Metodos-Pago.png" alt="" />
+                			<span class="metodo-img" style="align-items: flex-start">
+                  				
+								<img src="/img/mercado-pago.png" alt="" />
 							</span>
                 			<div class="text-center mt-3">
-                  				<NuxtLink :to="{ path:'/home' }" class="btn-custom">
+                  				<NuxtLink :to="{ path:'/' }" class="btn btn-custom">
                     				<img
                      					 class="icon_btn"
 										src="assets/img/cart-add.svg"
 									alt=""/>
                     				Seguir comprando
 								</NuxtLink>
-								<NuxtLink :to="{ path:'/checkout'}" class="btn-custom ml-5">
+								<NuxtLink :to="{ path:'/checkout'}" class="btn btn-custom ml-5" v-if="total > 0">
 									Finalizar compra
 								</NuxtLink>
                		 		</div>
@@ -98,11 +102,12 @@
 		computed: {
 			total () {
 				var total = 0;
-				return this.products.map(product => {
+				this.products.forEach(product => {
 
-					total = total + parseFloat(JSON.parse(product.product.object).price)
-					return total
+					total = total + (parseFloat(product.amount * product.unit_price))
+					
 				})
+				return total
 			}
 		},
 		data(){
@@ -148,6 +153,22 @@
 
 				}
 	
+
+			},
+			async updateProductAmount(id, type){
+				var productIndex = null
+				this.products.forEach((product, index) => {
+					if(product.id == id){
+						if(type == "add")
+							this.products[index].amount++
+						else if(type == "substract")
+							this.products[index].amount--
+						productIndex = index
+						
+					}	
+				})
+
+				let res = await this.$axios.post("/cart/update", {amount:this.products[productIndex].amount, id: id})
 
 			}
 
