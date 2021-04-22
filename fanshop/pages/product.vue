@@ -222,7 +222,7 @@
                 let res = await this.$axios.post('/product', {"id": this.id, "searchType":this.searchType})
                 
                 if(res.data.product.imageUrlList){
-                    
+                    console.log("product", res.data.product)
                     this.fullObject = res.data.product
                     this.id = res.data.product.asin
                     this.images = res.data.product.imageUrlList
