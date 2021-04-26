@@ -94,7 +94,7 @@ class SalesController extends Controller
 
             //$result = "B0841787BZ-1-1,B07JZ64BWC-1-2";
             $this->addedToCart($result, "amazon");
-            return response()->json(["success" => true, "msg" => "Productos añadidos al carrito de tu plataforma"]);
+            return response()->json(["success" => true, "msg" => "Productos añadidos al carrito de tu plataforma", "test" => $result]);
 
         }catch(\Exception $e){
 
