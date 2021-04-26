@@ -248,6 +248,12 @@
             calculateTaxes(res){
 
                 this.weight = 0
+                this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
+                this.maxPriceTax = res.data.configuration.price_tax_percent
+                this.pricePerPound = res.data.configuration.price_per_pound                    
+                let weightTax = 0
+                let priceTax = 0
+
                 if(res.data.productDetails != null){
                     let weight = res.data.product.productDetails.filter(data => { if(data.name .toLowerCase() == "item weight") return data.value  })
                     this.weight = 0
@@ -270,9 +276,6 @@
                             }
                         }
                     }
-                    
-                    this.pricePerPound = res.data.configuration.price_per_pound                    
-                    let weightTax = 0
 
                     if(weight == 1){
                         weightTax = 15;
@@ -281,10 +284,6 @@
                     }
 
                 }
-
-                this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
-                this.maxPriceTax = res.data.configuration.price_tax_percent
-                let priceTax = 0
 
                 if(this.price > this.maxPriceWithoutTax){
                     priceTax = this.price * this.maxPriceTax
