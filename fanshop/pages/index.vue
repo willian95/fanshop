@@ -52,5 +52,7 @@
 </script>
 
 <style>
-
+    .img-responsive{
+        width: 100%;
+    }
 </style>
