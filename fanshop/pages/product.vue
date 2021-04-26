@@ -271,12 +271,7 @@
                         }
                     }
                     
-                    
-                    this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
-                    this.maxPriceTax = res.data.configuration.price_tax_percent
-                    this.pricePerPound = res.data.configuration.price_per_pound
-
-                    let priceTax = 0
+                    this.pricePerPound = res.data.configuration.price_per_pound                    
                     let weightTax = 0
 
                     if(weight == 1){
@@ -285,14 +280,17 @@
                         weightTax = this.weight * this.pricePerPound
                     }
 
-                    if(this.price > this.maxPriceWithoutTax){
-                        priceTax = this.price * this.maxPriceTax
-                    }
-
-                    this.total = this.price + weightTax + priceTax
                 }
 
-                
+                this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
+                this.maxPriceTax = res.data.configuration.price_tax_percent
+                let priceTax = 0
+
+                if(this.price > this.maxPriceWithoutTax){
+                    priceTax = this.price * this.maxPriceTax
+                }
+
+                this.total = this.price + weightTax + priceTax
 
             },
             checkAvailability(){
