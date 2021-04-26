@@ -75,7 +75,7 @@ class SalesController extends Controller
 
         ini_set("max_execution_time", 0);
 
-        try{
+        //try{
 
             $productString = "";
             $index = 0;
@@ -96,11 +96,11 @@ class SalesController extends Controller
             //$this->addedToCart($result, "amazon");
             return response()->json(["success" => true, "msg" => "Productos añadidos al carrito de tu plataforma", "test" => $result]);
 
-        }catch(\Exception $e){
+        /*}catch(\Exception $e){
 
             return response()->json(["success" => true, "err" => $e->getMessage(), "ln" => $e->getLine()]); 
 
-        }
+        }*/
     }
 
     function addedToCart($result, $seller){
