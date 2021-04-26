@@ -1,121 +1,91 @@
 <template>
     
-    <section class="container">
-		<loading :loading="loading" />
-    	<div class="row">
+    <div class="d-flex flex-column-fluid" id="dev-appliance-list">
 
-            <!-- Modal -->
-            <div class="modal fade productsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Productos comprados</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+        <PurchaseModal :products="products" :toggleProducts="toggleProducts" :checkTest="checkTest" :selectedProducts="selectedProducts" :dateFormatter="dateFormatter"/>
+
+        <!--begin::Container-->
+        <div class="container">
+            <!--begin::Card-->
+            <div class="card card-custom">
+                <!--begin::Header-->
+                <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                    <div class="card-title">
+                        <h3 class="card-label">Ventas</h3>
                     </div>
-                    <div class="modal-body">
-                        <table class="table">
+                    <div class="card-toolbar">
+                        <!--begin::Dropdown-->
+                        <button class="btn btn-primary" @click="addToAmazon()">Añadir a Amazon</button>
+                        <!--end::Dropdown-->
+                    </div>
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body">
+                    <!--begin: Datatable-->
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Ordenar por:</label>
+                               <select class="form-control" v-model="orderBy" @change="fetch(page)">
+                                    <option value="1">Fecha (asc)</option>
+                                    <option value="2">Fecha (desc)</option>
+                                    <option value="3">Cliente (asc)</option>
+                                    <option value="4">Cliente (desc)</option>
+                                    <option value="5">Email (asc)</option>
+                                    <option value="6">Email (desc)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded" id="kt_datatable" style="">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th>Producto</th>
-                                    <th>Precio</th>
-                                    <th>Cantidad</th>
+                                    <td>Fecha</td>
+                                    <td>Status</td>
+                                    <td>Cliente</td>
+                                    <td>Email</td>
+                                    <td>Total</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="product in products" v-bind:key="product.id">
-                                    <td><img style="max-width: 120px;" :src="product.product.image" alt=""></td>
+                                <tr v-for="purchase in purchases" v-bind:key="purchase.id">
+                                    <td>{{ dateFormatter(purchase.created_at) }}</td>
                                     <td>
-                                        <NuxtLink :to="{path: '/product', query: { id: product.product.productId, searchType: product.product.searchType }}" v-on:click.native="hideModal()">
-                                            <p>{{ JSON.parse(product.product.object).productTitle.substring(0, 60) }}</p>
-                                        </NuxtLink>
+                                        <span v-if="purchase.status == 'approved'">Aprobado</span>
+                                        <span v-if="purchase.status == 'in_process'">En proceso</span>
+                                        <span v-if="purchase.status == 'rejected'">Rechazado</span>
+                                        {{ showStatusDetail(purchase) }}
                                     </td>
-                                    <td>USD {{ product.unit_price }}</td>
-                                    <td>{{ product.amount }}</td>
+                                    <td>{{ purchase.user.name }} {{ purchase.user.lastname }}</td>
+                                    <td>{{ purchase.user.email }}</td>
+                                    <td>
+                                        S. {{ Math.ceil(purchase.total * 3.63) }}
+                                    </td>
+                                    <td>
+                                        <button @click="setProducts(purchase.purchase_products)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                    </td>
                                 </tr>
                             </tbody>
-
                         </table>
+                    
                     </div>
-                    <div class="moda-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal" aria-label="Close">cerrar</button>
-
-                    </div>
-                    </div>
+                    <!--end: Datatable-->
                 </div>
+                <!--end::Body-->
             </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Container-->
+
+    </div>
 
 
-     	 	<div class="col-sm-12">
-        		<div class="carrito">
-          			<div class="title-general text-center mb-4">
-            		<h1>Mis compras</h1>
-          		</div>
-          		<div class="row">
-					<div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <label for="Ordenar por"></label>
-                                    <select class="form-control" v-model="orderBy" @change="fetch(page)">
-                                        <option value="1">Fecha (asc)</option>
-                                        <option value="2">Fecha (desc)</option>
-                                        <option value="3">Cliente (asc)</option>
-                                        <option value="4">Cliente (desc)</option>
-                                        <option value="5">Email (asc)</option>
-                                        <option value="6">Email (desc)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-              			<div class="table-resposive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <td>Fecha</td>
-                                        <td>Status</td>
-                                        <td>Cliente</td>
-                                        <td>Email</td>
-                                        <td>Total</td>
-                                        <td></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="purchase in purchases" v-bind:key="purchase.id">
-                                        <td>{{ dateFormatter(purchase.created_at) }}</td>
-                                        <td>
-                                            <span v-if="purchase.status == 'approved'">Aprobado</span>
-                                            <span v-if="purchase.status == 'in_process'">En proceso</span>
-                                            <span v-if="purchase.status == 'rejected'">Rechazado</span>
-                                            {{ showStatusDetail(purchase) }}
-                                        </td>
-                                        <td>{{ purchase.user.name }} {{ purchase.user.lastname }}</td>
-                                        <td>{{ purchase.user.email }}</td>
-                                        <td>
-                                            S. {{ Math.ceil(purchase.total * 3.63) }}
-                                        </td>
-                                        <td>
-                                            <button @click="setProducts(purchase.purchase_products)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-            		</div>
-				</div>
-                <div class="row">
-                    <div class="col-12">
-                        <Paginator :pages="pages" :setPage="setPage" :isSearch="false"/>
-                    </div>
-                </div>
-			</div>
-		</div>
-	</div>
-
-  	</section>
+    
 		
 	
 </template>
@@ -124,17 +94,19 @@
 
     import Loading from '../../components/Loading';
     import Paginator from '../../components/Paginator';
+    import PurchaseModal from '../../components/admin/sales/PurchaseModal';
 
     export default {
         layout: 'admin/admin',
         middleware:["auth", "admin"],
         auth:"auth",
-        components:{Paginator, Loading},
+        components:{Paginator, Loading, PurchaseModal},
         data(){
 			return{
 				purchases:[],
                 products:[],
                 statusDetails:[],
+                selectedProducts:[],
                 orderBy:1,
                 page:1,
                 pages:1,
@@ -197,6 +169,66 @@
             },
             setProducts(products){
                 this.products = products
+            },
+            toggleProducts(id, amount, asin){
+
+                let product = this.selectedProducts.filter((product) => {
+
+                    return product.id == id
+
+                })
+
+                if(product.length == 0){
+
+                    this.selectedProducts.push({id: id, amount: amount, asin: asin})
+
+                }else{
+
+                    this.selectedProducts.forEach((product, index) => {
+
+                        if(product.id == id){
+                            this.selectedProducts.splice(index, 1)
+                        }
+
+                    })
+
+                }
+
+
+            },
+            checkTest(product){
+                    var exists = false
+                this.selectedProducts.forEach((data) => {
+                    if(data.id == product.id){
+                        exists = true
+                    }
+                })
+
+                return exists
+            },
+            async addToAmazon(){
+                this.loading = true
+                let res = await this.$axios.post("/admin/sales/add-to-amazon", {products: this.selectedProducts})
+                this.loading = false
+                if(res.data.success == true){
+                    this.$swal({
+                        text:res.data.msg,
+                        icon: "success"
+                    }).then(ans => {
+                        this.fetch(this.page)
+                    })
+
+                    this.selectedProducts = []
+                }
+
+                else{
+                    this.$swal({
+                        text:res.data.msg,
+                        icon: "error"
+                    })
+                }
+                
+
             }
 
 		},
@@ -205,3 +237,9 @@
 		}
     }
 </script>
+
+<style>
+    .content{
+        margin-left: 0px;
+    }
+</style>

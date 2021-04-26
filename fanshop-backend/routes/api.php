@@ -71,4 +71,6 @@ Route::group([
 
     Route::post("admin/sales/fetch", [SalesController::class, "fetch"]);
 
+    Route::post("admin/sales/add-to-amazon", [SalesController::class, "addToAmazon"]);
+
 });

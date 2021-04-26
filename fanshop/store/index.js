@@ -3,7 +3,8 @@ export const state = () => ({
     searchQuery:"",
     searchPage:"",
     searchClicked:false,
-    loadingStatus:false
+    loadingStatus:false,
+    selectedPurchasedProducts:[]
 })
   
 export const getters = {
@@ -26,7 +27,10 @@ export const getters = {
     },
     loggedInUser(state) {
         return state.auth.user
-    }
+    },
+    getSelectedPurchasedProducts(state){
+        return state.selectedPurchasedProducts
+    },
 
 }
 
@@ -37,6 +41,9 @@ export const actions = {
     },
     storeSearchClicked({commit}, {value}){
         commit('storeSearchClicked', {value})
+    },
+    storeSelectedPurchasedProducts({commit}, {value}){
+        commit('storeSelectedPurchasedProducts', {value})
     }
 
 }
@@ -50,6 +57,9 @@ export const mutations = {
     },
     storeSearchClicked(state, {value}){
         state.searchClicked = value
+    },
+    storeSelectedPurchasedProducts(state, {value}){
+        state.selectedPurchasedProducts = value
     }
 
 }

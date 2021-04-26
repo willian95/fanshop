@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Purchase;
+use App\Models\PurchaseProduct;
+use Carbon\Carbon;
 use Auth;
 
 class SalesController extends Controller
@@ -68,5 +70,60 @@ class SalesController extends Controller
         return response()->json(["success" => true, "purchases" => $purchases, "purchasesCount" => $purchasesCount, "dataAmount" => $dataAmount]);
 
     }
+
+    function addToAmazon(Request $request){
+
+        ini_set("max_execution_time", 0);
+
+        try{
+
+            $productString = "";
+            $index = 0;
+            foreach($request->products as $product){
+                $productString .= $product["asin"]."-".$product["amount"]."-".$product["id"];
+                
+                if( $index < count($request->products)-1){
+
+                    $productString = $productString.",";
+
+                }
+                $index++;
+            }
+
+            //$result = exec("node ../fanshop-amazon/index.js ".$productString." ".env("AMAZON_EMAIL")." ".env("AMAZON_PASSWORD"));
+
+            $result = "B0841787BZ-1-1,B07JZ64BWC-1-2";
+            $this->addedToCart($result, "amazon");
+            return response()->json(["success" => true, "msg" => "Productos añadidos al carrito de tu plataforma"]);
+
+        }catch(\Exception $e){
+
+            return response()->json(["success" => true, "msg" => "Products added to your cart"]); 
+
+        }
+    }
+
+    function addedToCart($result, $seller){
+
+        $products = explode(",", $result);
+
+        foreach($products as $product){
+
+            $part = explode("-", $product);
+            
+            $purchaseProduct = PurchaseProduct::find($part[2]);
+            if($purchaseProduct->product->productId == $part[0]){
+                if($seller == "amazon"){
+                    $purchaseProduct->amazon_cart_added_at = Carbon::now();
+                }
+                $purchaseProduct->update();
+            }
+
+        }
+
+
+    }
+
+
 
 }
