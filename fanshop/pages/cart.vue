@@ -57,7 +57,7 @@
                 			</div>-->
                 			<div class="pedido-item">
                   				<p>Total</p>
-                  				<span>USD {{ total }}</span>
+                  				<span>USD {{ Math.ceil(total) }}</span>
                 			</div>
 							<div class="pedido-item">
                   				<p>Total</p>
