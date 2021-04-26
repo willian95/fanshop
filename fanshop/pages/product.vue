@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="precio-detail">
-                        <p class="large-fs">Total: {{ Math.ceil(total) }}</p>
+                        <p class="large-fs">Total: USD {{ Math.ceil(total) }}</p>
                     </div>
                     
                     <!--<p>Agreegar el producto al carrito para conocer los costos de envio</p>-->

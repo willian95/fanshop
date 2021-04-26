@@ -14,9 +14,9 @@
             </NuxtLink>
             <span v-if="cart.destination_payment == 1">*Producto con pago a destino</span>
         </td>
-        <td>$ {{ cart.unit_price }}</td>
+        <td>$ {{ Math.ceil(cart.unit_price) }}</td>
         <td> <!--<button class="btn btn-info" @click="updateAmount(cart.id,'add')"> + </button>--> {{ cart.amount }} <span v-if="showUpdateAmount == true"><button @click="updateAmount(cart.id,'substract')" v-if="cart.amount - 1 >= cart.product.minimun_quantity" class="btn btn-info"> - </button></span></td>
-        <td class="text-center"><span>$ {{ cart.unit_price * cart.amount }}</span></td>
+        <td class="text-center"><span>$ {{ Math.ceil(cart.unit_price * cart.amount) }}</span></td>
         <td>
 
             <button v-if="showErase" class="btn btn-danger" @click="erase(cart.id)">X</button>
