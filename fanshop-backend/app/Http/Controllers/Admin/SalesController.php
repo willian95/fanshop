@@ -98,7 +98,7 @@ class SalesController extends Controller
 
         }catch(\Exception $e){
 
-            return response()->json(["success" => true, "msg" => "Products added to your cart"]); 
+            return response()->json(["success" => true, "err" => $e->getMessage(), "ln" => $e->getLine()]); 
 
         }
     }
