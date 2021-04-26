@@ -68,7 +68,7 @@
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
-									<NuxtLink :to="{ path: '/sales'}" href="#" class="menu-link">
+									<NuxtLink :to="{ path: '/admin/sales'}" href="#" class="menu-link">
 										<i class="menu-icon flaticon-user-add"></i>
 										<span class="menu-text">Ventas</span>
 									</NuxtLink>
