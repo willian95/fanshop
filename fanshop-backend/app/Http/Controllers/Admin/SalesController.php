@@ -90,9 +90,9 @@ class SalesController extends Controller
                 $index++;
             }
 
-            //$result = exec("node ../fanshop-amazon/index.js ".$productString." ".env("AMAZON_EMAIL")." ".env("AMAZON_PASSWORD"));
+            $result = exec("node ../fanshop-amazon/index.js ".$productString." ".env("AMAZON_EMAIL")." ".env("AMAZON_PASSWORD"));
 
-            $result = "B0841787BZ-1-1,B07JZ64BWC-1-2";
+            //$result = "B0841787BZ-1-1,B07JZ64BWC-1-2";
             $this->addedToCart($result, "amazon");
             return response()->json(["success" => true, "msg" => "Productos añadidos al carrito de tu plataforma"]);
 
