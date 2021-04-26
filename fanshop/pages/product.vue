@@ -247,47 +247,52 @@
             },
             calculateTaxes(res){
 
-                let weight = res.data.product.productDetails.filter(data => { if(data.name .toLowerCase() == "item weight") return data.value  })
                 this.weight = 0
-                if(weight.length > 0){
-                    if( weight[0]["value"].toLowerCase().indexOf("pound") > -1){
-                        weight = weight[0]["value"].toLowerCase().substring(0, weight[0]["value"].indexOf("pound"))
-                        this.weight = parseFloat(weight)
-                    }
+                if(res.data.productDetails != null){
+                    let weight = res.data.product.productDetails.filter(data => { if(data.name .toLowerCase() == "item weight") return data.value  })
+                    this.weight = 0
+                    if(weight.length > 0){
+                        if( weight[0]["value"].toLowerCase().indexOf("pound") > -1){
+                            weight = weight[0]["value"].toLowerCase().substring(0, weight[0]["value"].indexOf("pound"))
+                            this.weight = parseFloat(weight)
+                        }
 
-                    else if(weight[0]["value"].toLowerCase().indexOf("ounce") > -1){
-                        weight = weight[0]["value"].toLowerCase().substring(0, weight[0]["value"].indexOf("ounce"))
-                        weight = parseFloat(weight)
+                        else if(weight[0]["value"].toLowerCase().indexOf("ounce") > -1){
+                            weight = weight[0]["value"].toLowerCase().substring(0, weight[0]["value"].indexOf("ounce"))
+                            weight = parseFloat(weight)
 
-                        if(weight <= 16){
-                            this.weight = 1
-                        }else{
+                            if(weight <= 16){
+                                this.weight = 1
+                            }else{
 
-                            this.weight = weight/16;
+                                this.weight = weight/16;
 
+                            }
                         }
                     }
+                    
+                    
+                    this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
+                    this.maxPriceTax = res.data.configuration.price_tax_percent
+                    this.pricePerPound = res.data.configuration.price_per_pound
+
+                    let priceTax = 0
+                    let weightTax = 0
+
+                    if(weight == 1){
+                        weightTax = 15;
+                    }else if(weight > 1){
+                        weightTax = this.weight * this.pricePerPound
+                    }
+
+                    if(this.price > this.maxPriceWithoutTax){
+                        priceTax = this.price * this.maxPriceTax
+                    }
+
+                    this.total = this.price + weightTax + priceTax
                 }
+
                 
-                
-                this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
-                this.maxPriceTax = res.data.configuration.price_tax_percent
-                this.pricePerPound = res.data.configuration.price_per_pound
-
-                let priceTax = 0
-                let weightTax = 0
-
-                if(weight == 1){
-                    weightTax = 15;
-                }else if(weight > 1){
-                    weightTax = this.weight * this.pricePerPound
-                }
-
-                if(this.price > this.maxPriceWithoutTax){
-                    priceTax = this.price * this.maxPriceTax
-                }
-
-                this.total = this.price + weightTax + priceTax
 
             },
             checkAvailability(){
