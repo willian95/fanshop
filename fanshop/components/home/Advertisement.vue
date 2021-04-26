@@ -7,7 +7,7 @@
 					<div>
 						<span>Crea una cuenta</span>
 					<p>¡Facil y sencillo!</p>
-					<a class="btn-custom" href="#">Registrate</a>
+					<NuxtLink :to="{ path: '/register' }" class="btn-custom" href="#">Registrate</NuxtLink>
 					<img src="/img/logo.png" alt="">
 					</div>
 				</div>

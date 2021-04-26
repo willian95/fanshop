@@ -3,17 +3,17 @@
 		<nav class="navbar navbar-expand-md navbar-fixed-js" id="home-serviteca" style="box-shadow: 0px 0px 12px #0000002e;">
 			<div class="col-md-12">
 				<div class="container-fluid menu-principal">
-					<a class="navbar-brand" href="#">
+					<NuxtLink class="navbar-brand" :to="{ path: '/' }">
 						<img src="/img/logo-fanshop.png" alt="" />
-					</a>
+					</NuxtLink>
 					<!-----------------serarch--------------------->
 					<form class="position-relative formulario-style">
 						<input class="form-control mr-sm-2 buscador" type="search" placeholder="Buscar cualquier articulo.." aria-label="Search" v-model="query">
 						<div class="btn-search">
-							<button type="button">
+							<!--<button type="button">
 								<img class="icon-buscador" src="/img/search.png" alt="" />
 								Buscar
-							</button>
+							</button>-->
 							<button type="button" @click="querySearch('amazon')">
 								<img class="icon-buscador" src="/img/search.png" alt="" />
 								<img class="icon-logo" src="/img/Amazon_logo.png" alt="" />
