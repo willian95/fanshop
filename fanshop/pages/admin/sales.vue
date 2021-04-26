@@ -3,7 +3,7 @@
     <div class="d-flex flex-column-fluid" id="dev-appliance-list">
 
         <PurchaseModal :products="products" :toggleProducts="toggleProducts" :checkTest="checkTest" :selectedProducts="selectedProducts" :dateFormatter="dateFormatter"/>
-
+        <loading :loading="loading" />
         <!--begin::Container-->
         <div class="container">
             <!--begin::Card-->
