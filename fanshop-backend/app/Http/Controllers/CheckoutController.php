@@ -20,10 +20,14 @@ class CheckoutController extends Controller
 {
     
     function checkout(Request $request){
-
      
         SDK::setAccessToken(env("MP_SECRET"));
         $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
+
+        $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
+        $test = $this->zincapiProductCategorize($cartProducts);
+
+        return response()->json($test);
 
         $payment = new Payment();
         $payment->transaction_amount = (float)$request->transactionAmount;
@@ -88,7 +92,8 @@ class CheckoutController extends Controller
 
     function storePurchasedProducts($auth, $purchase){
 
-        $cartProducts = Cart::where("user_id", $auth->id)->get();
+        $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
+        $this->zincapiProductCategorize($cartProducts);
 
         foreach($cartProducts as $product){
 
@@ -100,7 +105,7 @@ class CheckoutController extends Controller
             $purchaseProduct->purchase_id = $purchase->id;
             $purchaseProduct->save();
 
-            $this->deleteProductFromCart($product);
+            //$this->deleteProductFromCart($product);
 
         }
 
@@ -124,6 +129,100 @@ class CheckoutController extends Controller
         return $description;
 
     }
+
+    function zincapiProductCategorize($cartProducts){
+
+        $amazon = [];
+        $walmart = [];
+
+        foreach($cartProducts as $cart){
+
+            if($cart->product->searchType == "amazon"){
+
+                $amazon[]=[
+                    "product_id" => $cart->product->productId,
+                    "quantity" => $cart->amount
+                ];
+
+            }else if($cart->product->searchType == "walmart"){
+
+                $walmart[]=[
+                    "product_id" => $cart->product->productId,
+                    "quantity" => $cart->amount
+                ];
+
+            }
+
+        }
+
+        $test = $this->zincapiOrderPlacement($amazon, $walmart);
+        return $test;
+
+    }
+
+    function zincapiOrderPlacement($amazon, $walmart){
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+        curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
+        curl_setopt($ch, CURLOPT_USERPWD, env("B9C027D6BDE0DC0707087057"));
+        
+        // SSL important
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+
+        $data = '{
+            "retailer": "amazon",
+            "products": '.json_encode($amazon).',
+            "max_price": 0,
+            "shipping_address": {
+              "first_name": "Darío",
+              "last_name": "Oliveira",
+              "address_line1": "8301 NW 66TH ST",
+              "address_line2": "",
+              "zip_code": "33166",
+              "city": "MIAMI",
+              "state": "FL",
+              "country": "US",
+              "phone_number": "5168374845‬"
+            },
+            "is_gift": false,
+            "shipping_method":"cheapest",
+            "addax":true,
+            "billing_address": {
+              "first_name": "Darío",
+              "last_name": "Oliveira",
+              "address_line1": "8301 NW 66TH ST",
+              "address_line2": "",
+              "zip_code": "33166",
+              "city": "MIAMI",
+              "state": "FL",
+              "country": "US",
+              "phone_number": "5168374845‬"
+            },
+            "retailer_credentials": {
+              "email": "'.env("AMAZON_EMAIL").'",
+              "password": "'.env("AMAZON_PASSWORD").'",
+              "totp_2fa_key": "NFUO QOFD NXEW CY4A Z2E5 FHCB GMGL CWKN JAXE 6ZZQ 2VP5 3ECQ G63A"
+            },
+            "webhooks": {
+              "request_succeeded": "'.url('/zinc/request_succeeded').'",
+              "request_failed": "'.url('/zinc/request_failed').'",
+              "tracking_obtained": "'.url('/zinc/tracking_obtained').'",
+              "status_updated": "'.url('/zinc/status_updated').'"
+            }
+          }';
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+        return $output;
+
+    }
+
+
 
 
 }
