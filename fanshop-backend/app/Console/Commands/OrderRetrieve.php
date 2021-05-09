@@ -61,7 +61,7 @@ class OrderRetrieve extends Command
             $purchase = Purchase::find($purchase->id);
             //dump($purchase->zinc_api_code);
             //dump($response->code);
-            //if($purchase->zinc_api_code != $response->code){
+            if($purchase->zinc_api_code != $response->code){
 
                 $this->sendAdminEmail($purchase);
 
@@ -69,7 +69,7 @@ class OrderRetrieve extends Command
                 $purchase->zinc_api_message = $response->message;
                 $purchase->update();
 
-            //}
+            }
 
             
 
