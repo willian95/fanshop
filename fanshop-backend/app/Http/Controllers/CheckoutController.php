@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Purchase;
 use App\Models\PurchaseProduct;
 use App\Models\MercadoPagoDetailedStatusMessage;
+use Illuminate\Support\Str;
 use Auth;
 
 use MercadoPago\Item;
@@ -26,6 +27,7 @@ class CheckoutController extends Controller
 
         $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
         $requestId = $this->zincapiProductCategorize($cartProducts)->request_id;
+        $requestResponse = $this->checkForRequestCode($requestId);
 
         $payment = new Payment();
         $payment->transaction_amount = (float)$request->transactionAmount;
@@ -56,7 +58,7 @@ class CheckoutController extends Controller
 
         if($payment->status != "rejected"){
 
-            $this->storePurchase($payment, $auth, $request, $requestId);
+            $this->storePurchase($payment, $auth, $request, $requestId, $requestResponse);
 
             return response()->json(["success" => true, "msg" => $status, "title" => "Productos comprados exitosamente"]);
         }else{
@@ -68,9 +70,10 @@ class CheckoutController extends Controller
     }
 
 
-    function storePurchase($payment, $auth, $request, $requestId){
+    function storePurchase($payment, $auth, $request, $requestId, $requestResponse){
 
         $purchase = new Purchase;
+        $purchase->purchase_index = Str::random(40);
         $purchase->user_id = $auth->id;
         $purchase->total = $request->usdTotal;
         $purchase->mercado_pago_status = $payment->status;
@@ -79,6 +82,8 @@ class CheckoutController extends Controller
         $purchase->mercado_pago_payment_method_id = $request->paymentMethodId;
         $purchase->mercado_pago_installments = $payment->installments;
         $purchase->zinc_api_request_id = $requestId;
+        $purchase->zinc_api_code = $requestResponse->code;
+        $purchase->zinc_api_message = $requestResponse->message;
         $purchase->save();
 
         if($payment->status != "rejected"){
@@ -133,6 +138,7 @@ class CheckoutController extends Controller
 
         $amazon = [];
         $walmart = [];
+        $maxPrice = 0;
 
         foreach($cartProducts as $cart){
 
@@ -142,6 +148,8 @@ class CheckoutController extends Controller
                     "product_id" => $cart->product->productId,
                     "quantity" => $cart->amount
                 ];
+
+                $maxPrice = $maxPrice + ($cart->unit_price * $cart->amount);
 
             }else if($cart->product->searchType == "walmart"){
 
@@ -154,17 +162,17 @@ class CheckoutController extends Controller
 
         }
 
-        $test = $this->zincapiOrderPlacement($amazon, $walmart);
+        $test = $this->zincapiOrderPlacement($amazon, $walmart, $maxPrice);
         return $test;
 
     }
 
-    function zincapiOrderPlacement($amazon, $walmart){
+    function zincapiOrderPlacement($amazon, $walmart, $maxPrice){
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
         curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
-        curl_setopt($ch, CURLOPT_USERPWD, "client_token:".env("B9C027D6BDE0DC0707087057"));
+        curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
         
         // SSL important
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -174,7 +182,7 @@ class CheckoutController extends Controller
         $data = '{
             "retailer": "amazon",
             "products": '.json_encode($amazon).',
-            "max_price": 0,
+            "max_price": '.$maxPrice.',
             "shipping_address": {
               "first_name": "Darío",
               "last_name": "Oliveira",
@@ -188,7 +196,6 @@ class CheckoutController extends Controller
             },
             "is_gift": false,
             "shipping_method":"cheapest",
-            "addax":true,
             "billing_address": {
               "first_name": "Darío",
               "last_name": "Oliveira",
@@ -205,6 +212,9 @@ class CheckoutController extends Controller
               "password": "'.env("AMAZON_PASSWORD").'",
               "totp_2fa_key": "NFUO QOFD NXEW CY4A Z2E5 FHCB GMGL CWKN JAXE 6ZZQ 2VP5 3ECQ G63A"
             },
+            "payment_method": {
+                "use_gift": true
+            },
             "webhooks": {
               "request_succeeded": "'.url('/zinc/request_succeeded').'",
               "request_failed": "'.url('/zinc/request_failed').'",
@@ -213,6 +223,24 @@ class CheckoutController extends Controller
             }
           }';
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($output);
+
+    }
+
+    function checkForRequestCode($requestId){
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+        curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders/".$requestId);
+        curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
+        
+        // SSL important
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         $output = curl_exec($ch);
         curl_close($ch);

@@ -15,7 +15,6 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th></th>
                             <th>Producto</th>
                             <th>Precio</th>
                             <th>Cantidad</th>
@@ -23,11 +22,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="product in products" v-bind:key="product.id">
-                            <td>
-                                <div class="form-group form-check" v-if="product.amazon_cart_added_at == null">
-                                    <input type="checkbox" class="form-check-input" @click="toggleProducts(product.id, product.amount, product.product.productId)" :checked="checkTest(product)">
-                                </div>
-                            </td>
+
                             <td><img style="max-width: 120px;" :src="product.product.image" alt=""></td>
                             <td>
                                 <NuxtLink :to="{path: '/product', query: { id: product.product.productId, searchType: product.product.searchType }}" v-on:click.native="hideModal()">
@@ -41,6 +36,15 @@
                     </tbody>
 
                 </table>
+
+                <div class="container" v-if="purchaseDetails">
+                    <div class="col-12">
+                        <p class="text-left">Código: {{ purchaseDetails.zinc_api_code }}</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-left">Message: {{ purchaseDetails.zinc_api_message }}</p>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cerrar</button>
@@ -56,6 +60,6 @@
 <script>
     export default {
         name:"PurchaseModal",
-        props:["products", "selectedProducts", "toggleProducts", "checkTest", "dateFormatter"],
+        props:["products", "selectedProducts", "toggleProducts", "checkTest", "dateFormatter", "purchaseDetails"],
     }
 </script>

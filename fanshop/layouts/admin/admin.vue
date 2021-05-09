@@ -74,6 +74,13 @@
 									</NuxtLink>
 								</li>
 
+								<li class="menu-item" aria-haspopup="true">
+									<NuxtLink :to="{ path: '/admin/adminEmail'}" href="#" class="menu-link">
+										<i class="menu-icon flaticon-user-add"></i>
+										<span class="menu-text">Email administrativos</span>
+									</NuxtLink>
+								</li>
+
 								
 							</ul>
 							<!--end::Menu Nav -->

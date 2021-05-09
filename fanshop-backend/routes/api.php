@@ -15,6 +15,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\MercadoPagoStatusDetailController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Admin\SalesController;
+use App\Http\Controllers\Admin\EmailAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,5 +73,10 @@ Route::group([
     Route::post("admin/sales/fetch", [SalesController::class, "fetch"]);
 
     Route::post("admin/sales/add-to-amazon", [SalesController::class, "addToAmazon"]);
+
+    Route::get("admin/email-account/fetch", [EmailAccountController::class, "fetch"]);
+    Route::post("admin/email-account/store", [EmailAccountController::class, "store"]);
+    Route::post("admin/email-account/update", [EmailAccountController::class, "update"]);
+    Route::post("admin/email-account/delete", [EmailAccountController::class, "delete"]);
 
 });

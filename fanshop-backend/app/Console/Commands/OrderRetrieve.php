@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Purchase;
+use App\Models\AdminEmailAccount;
 
 class OrderRetrieve extends Command
 {
@@ -39,14 +40,14 @@ class OrderRetrieve extends Command
     public function handle()
     {
         
-        $purchases = Purchase::whereNotNull("zinc_api_request_id")->get();
+        $purchases = Purchase::whereNotNull("zinc_api_request_id")->where("zinc_api_code", "request_processing")->with("purchaseProducts")->get();
 
         foreach($purchases as $purchase){
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
             curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders/".$purchase->zinc_api_request_id);
-            curl_setopt($ch, CURLOPT_USERPWD, "client_token:".env("ZINCAPI_TOKEN"));
+            curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
             
             // SSL important
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -54,12 +55,45 @@ class OrderRetrieve extends Command
 
             $output = curl_exec($ch);
             curl_close($ch);
-            
-            dump(env("ZINCAPI_TOKEN"));
 
-            dump($output);
+            $response = json_decode($output);
+
+            $purchase = Purchase::find($purchase->id);
+            //dump($purchase->zinc_api_code);
+            //dump($response->code);
+            //if($purchase->zinc_api_code != $response->code){
+
+                $this->sendAdminEmail($purchase);
+
+                $purchase->zinc_api_code = $response->code;
+                $purchase->zinc_api_message = $response->message;
+                $purchase->update();
+
+            //}
+
+            
 
         }
 
     }
+
+    function sendAdminEmail($purchase){
+
+        foreach(AdminEmailAccount::all() as $adminEmailAccount){
+
+            $data = ["code" => $purchase->zinc_api_code, "apimessage" => $purchase->zinc_api_message, "purchasedProducts" => $purchase->purchaseProducts, "purchaseProducts", "purchaseIndex" => $purchase->purchase_index];
+            $to_name = "Admin";
+            $to_email = $adminEmailAccount->email;
+
+            \Mail::send("emails.adminPurchaseNotification", $data, function($message) use ($to_name, $to_email) {
+
+                $message->to($to_email, $to_name)->subject("¡Una compra ha actualizado su estado!");
+                $message->from( env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+
+            });
+
+        }
+
+    }
+
 }

@@ -2,7 +2,7 @@
     
     <div class="d-flex flex-column-fluid" id="dev-appliance-list">
 
-        <PurchaseModal :products="products" :toggleProducts="toggleProducts" :checkTest="checkTest" :selectedProducts="selectedProducts" :dateFormatter="dateFormatter"/>
+        <PurchaseModal :products="products" :toggleProducts="toggleProducts" :checkTest="checkTest" :selectedProducts="selectedProducts" :dateFormatter="dateFormatter" :purchaseDetails="purchaseDetails"/>
         <loading :loading="loading" />
         <!--begin::Container-->
         <div class="container">
@@ -12,11 +12,6 @@
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
                         <h3 class="card-label">Ventas</h3>
-                    </div>
-                    <div class="card-toolbar">
-                        <!--begin::Dropdown-->
-                        <button class="btn btn-primary" @click="addToAmazon()">Añadir a Amazon</button>
-                        <!--end::Dropdown-->
                     </div>
                 </div>
                 <!--end::Header-->
@@ -44,8 +39,9 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
+                                    <td>N° compra</td>
                                     <td>Fecha</td>
-                                    <td>Status</td>
+                                    <td>Status MP</td>
                                     <td>Cliente</td>
                                     <td>Email</td>
                                     <td>Total</td>
@@ -54,6 +50,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="purchase in purchases" v-bind:key="purchase.id">
+                                    <td>{{ purchase.purchase_index }}</td>
                                     <td>{{ dateFormatter(purchase.created_at) }}</td>
                                     <td>
                                         <span v-if="purchase.status == 'approved'">Aprobado</span>
@@ -67,7 +64,7 @@
                                         S. {{ Math.ceil(purchase.total * 3.63) }}
                                     </td>
                                     <td>
-                                        <button @click="setProducts(purchase.purchase_products)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                        <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -107,6 +104,7 @@
                 products:[],
                 statusDetails:[],
                 selectedProducts:[],
+                purchaseDetails:"",
                 orderBy:1,
                 page:1,
                 pages:1,
@@ -168,7 +166,8 @@
 
             },
             setProducts(products){
-                this.products = products
+                this.purchaseDetails = products
+                this.products = products.purchase_products
             },
             toggleProducts(id, amount, asin){
 
