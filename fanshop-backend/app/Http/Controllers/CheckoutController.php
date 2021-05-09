@@ -25,9 +25,7 @@ class CheckoutController extends Controller
         $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
 
         $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
-        $test = $this->zincapiProductCategorize($cartProducts);
-
-        return response()->json($test);
+        $requestId = $this->zincapiProductCategorize($cartProducts)->request_id;
 
         $payment = new Payment();
         $payment->transaction_amount = (float)$request->transactionAmount;
@@ -58,7 +56,7 @@ class CheckoutController extends Controller
 
         if($payment->status != "rejected"){
 
-            $this->storePurchase($payment, $auth, $request);
+            $this->storePurchase($payment, $auth, $request, $requestId);
 
             return response()->json(["success" => true, "msg" => $status, "title" => "Productos comprados exitosamente"]);
         }else{
@@ -70,7 +68,7 @@ class CheckoutController extends Controller
     }
 
 
-    function storePurchase($payment, $auth, $request){
+    function storePurchase($payment, $auth, $request, $requestId){
 
         $purchase = new Purchase;
         $purchase->user_id = $auth->id;
@@ -80,6 +78,7 @@ class CheckoutController extends Controller
         $purchase->mercado_pago_status_detail = $payment->status_detail;
         $purchase->mercado_pago_payment_method_id = $request->paymentMethodId;
         $purchase->mercado_pago_installments = $payment->installments;
+        $purchase->zinc_api_request_id = $requestId;
         $purchase->save();
 
         if($payment->status != "rejected"){
@@ -165,7 +164,7 @@ class CheckoutController extends Controller
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
         curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
-        curl_setopt($ch, CURLOPT_USERPWD, env("B9C027D6BDE0DC0707087057"));
+        curl_setopt($ch, CURLOPT_USERPWD, "client_token:".env("B9C027D6BDE0DC0707087057"));
         
         // SSL important
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -218,7 +217,7 @@ class CheckoutController extends Controller
         $output = curl_exec($ch);
         curl_close($ch);
 
-        return $output;
+        return json_decode($output);
 
     }
 

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\Purchase;
 
 class OrderRetrieve extends Command
 {
@@ -37,6 +38,28 @@ class OrderRetrieve extends Command
      */
     public function handle()
     {
-        return 0;
+        
+        $purchases = Purchase::whereNotNull("zinc_api_request_id")->get();
+
+        foreach($purchases as $purchase){
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+            curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders/".$purchase->zinc_api_request_id);
+            curl_setopt($ch, CURLOPT_USERPWD, "client_token:".env("ZINCAPI_TOKEN"));
+            
+            // SSL important
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+            
+            dump(env("ZINCAPI_TOKEN"));
+
+            dump($output);
+
+        }
+
     }
 }
