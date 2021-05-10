@@ -85,6 +85,8 @@ class CheckoutController extends Controller
         $purchase->purchase_index = Str::random(40);
         $purchase->user_id = $auth->id;
         $purchase->total = $request->usdTotal;
+        $purchase->total_peru = $request->transactionAmount;
+        $purchase->dolar_price = $request->dolarPrice;
         $purchase->mercado_pago_status = $payment->status;
         $purchase->mercado_pago_id = $payment->id;
         $purchase->mercado_pago_status_detail = $payment->status_detail;

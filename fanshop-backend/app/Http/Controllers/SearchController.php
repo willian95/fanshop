@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Configuration;
 
 class SearchController extends Controller
 {
@@ -19,7 +20,7 @@ class SearchController extends Controller
             $response = $this->walmartSearch($request->queryWord, $request->page);
         }
 
-        return response()->json(["success" => true, "products" => $response]);
+        return response()->json(["success" => true, "products" => $response, "configuration" => Configuration::first()]);
 
     }
 

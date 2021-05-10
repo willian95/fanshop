@@ -80,7 +80,7 @@
                                             <p>{{ JSON.parse(product.product.object).productTitle.substring(0, 60) }}</p>
                                         </NuxtLink>
                                     </td>
-                                    <td>USD {{ product.unit_price }}</td>
+                                    <td>S. {{ product.unit_price * purchaseDolarPrice }}</td>
                                     <td>{{ product.amount }}</td>
                                 </tr>
                             </tbody>
@@ -118,10 +118,10 @@
                                         {{ showStatusDetail(purchase) }}
                                     </td>
                                     <td>
-                                        S. {{ Math.ceil(purchase.total * 3.63) }}
+                                        S. {{ purchase.total_peru.toFixed(2) }}
                                     </td>
                                     <td>
-                                        <button @click="setProducts(purchase.purchase_products)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                        <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
                                         <button @click="setTracking(purchase.trackings)" class="btn btn-info" data-toggle="modal" data-target=".trackingModal">tracking</button>
                                     </td>
                                 </tr>
@@ -152,6 +152,7 @@
 		components:{Paginator, Loading},
 		data(){
 			return{
+                purchaseDolarPrice:0,
 				purchases:[],
                 products:[],
                 statusDetails:[],
@@ -196,7 +197,7 @@
 
                 if(status.length > 0){
                         
-                    return status[0].description.replaceAll("/amount/", "S. "+Math.ceil(purchase.total * 3.63)).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
+                    return status[0].description.replaceAll("/amount/", "S. "+purchase.total_peru).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
       
                     
                 }
@@ -221,8 +222,9 @@
                 return day+"-"+month+"-"+year
 
             },
-            setProducts(products){
-                this.products = products
+            setProducts(purchase){
+                this.purchaseDolarPrice = purchase.dolar_price
+                this.products = purchase.purchase_products
             }
 
 		},

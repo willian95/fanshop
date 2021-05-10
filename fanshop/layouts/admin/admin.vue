@@ -82,6 +82,13 @@
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
+									<NuxtLink :to="{ path: '/admin/settings'}" href="#" class="menu-link">
+										<i class="menu-icon flaticon-user-add"></i>
+										<span class="menu-text">Configuración</span>
+									</NuxtLink>
+								</li>
+
+								<li class="menu-item" aria-haspopup="true">
 									<NuxtLink :to="{ path: '/'}" href="#" class="menu-link">
 										<i class="menu-icon flaticon-user-add"></i>
 										<span class="menu-text w-100">Volver a la tienda</span>

@@ -7,7 +7,7 @@
             </div>
             <div class="card-producto-content">
                 <h4 class="title-producto">{{ title.substring(0, 40) }}</h4>
-                <span class="price">$ {{ price }}</span>
+                <span class="price">S. {{ ((price + (price * earnPercentage))*dolarPrice).toFixed(2) }}</span>
             </div>
         </div>
     </NuxtLink>
@@ -16,7 +16,7 @@
 <script>
 export default {
     name:"ProductCard",
-    props:{'image':String, 'title':String, 'price':[String, Number], 'id':String, 'searchType':String}
-    
+    props:{'image':String, 'title':String, 'price':[String, Number], 'id':String, 'searchType':String, 'dolarPrice':Number, 'earnPercentage':Number}
+
 }
 </script>

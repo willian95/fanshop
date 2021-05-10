@@ -8,7 +8,7 @@
         <loading :loading="loading" />
         <div class="row">
             <div class="col-md-3 mt-4" v-for="product in products" v-bind:key="product.id">
-                <ProductCard :image="product.imgUrl" :price="product.price" :title="product.productDescription" :id="product.asin" :searchType="search.type" />
+                <ProductCard :image="product.imgUrl" :price="product.price" :dolarPrice="configuration.dolar_price" :earnPercentage="configuration.earn_percentage" :title="product.productDescription" :id="product.asin" :searchType="search.type" />
             </div>
         </div>
         <div class="row">
@@ -52,7 +52,8 @@ export default {
             search:"",
             loading:false,
             products:[],
-            pages:0
+            pages:0,
+            configuration:[]
         }
     },
     methods:{
@@ -78,6 +79,7 @@ export default {
                     if(search.type == "amazon"){
                     
                         this.pages = Math.ceil(res.data.products.resultCount / res.data.products.numberOfProducts)
+                        this.configuration = res.data.configuration
                     }/*else if(search.type == "walmart"){
                         this.pages = parseInt(res.data.products.totalResults)
                     }*/

@@ -21,7 +21,7 @@
                   				</tr>
                 			</thead>
                 			<tbody>
-								<CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="eraseProduct" :showErase="true" :updateAmount="updateProductAmount" :showUpdateAmount="true" />
+								<CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="eraseProduct" :showErase="true" :updateAmount="updateProductAmount" :showUpdateAmount="true" :dolarPrice="configuration.dolar_price"/>
 
                 			</tbody>
               			</table>
@@ -55,13 +55,9 @@
                   				<p>Subtotal:</p>
                   				<span>USD 300.00</span>
                 			</div>-->
-                			<div class="pedido-item">
-                  				<p>Total</p>
-                  				<span>USD {{ Math.ceil(total) }}</span>
-                			</div>
 							<div class="pedido-item">
                   				<p>Total</p>
-                  				<span>S. {{ Math.ceil(total * 3.63) }}</span>
+                  				<span>S. {{ total * configuration.dolar_price }}</span>
                 			</div>
 
                 			<span class="metodo-img" style="align-items: flex-start">
@@ -113,6 +109,7 @@
 		data(){
 			return{
 				products:[],
+				configuration:[],
 				loading:false
 			}
 		},
@@ -125,6 +122,7 @@
 
 					let res = await this.$axios.get("cart/fetch")
 					this.products = res.data.products
+					this.configuration = res.data.configuration
 					
 
 				}catch(err){

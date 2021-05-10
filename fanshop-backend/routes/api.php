@@ -16,6 +16,7 @@ use App\Http\Controllers\MercadoPagoStatusDetailController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\EmailAccountController;
+use App\Http\Controllers\Admin\ConfigurationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,5 +83,8 @@ Route::group([
     Route::post("admin/tracking/store", [SalesController::class, "addTracking"]);
     Route::get("admin/tracking/fetch/{purchaseId}", [SalesController::class, "fetchTracking"]);
     Route::post("admin/tracking/delete", [SalesController::class, "deleteTracking"]);
+
+    Route::get("admin/configuration/fetch", [ConfigurationsController::class, "fetch"]);
+    Route::post("admin/configuration/update", [ConfigurationsController::class, "update"]);
 
 });

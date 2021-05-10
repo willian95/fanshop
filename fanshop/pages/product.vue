@@ -72,11 +72,11 @@
                 <div class="content-decription-pago">
 
                     <div class="precio-detail">
-                        <p class="medium-fs">Precio: <span>USD {{ price }}</span></p>
+                        <p class="medium-fs">Precio: <span>S. {{ ((price + (price * earnPercentage)) * dolarPrice).toFixed(2) }}</span></p>
                     </div>
                     <div v-if="price > maxPriceWithoutTax" class="precio-detail">
                         <p class="medium-fs">Impuesto: USD {{ Math.ceil(price * maxPriceTax) }}</p>
-                        <p class="small-fs">Toda comprar mayor a 200 USD tendrá un impuesto del {{ maxPriceTax * 100 }}%</p>
+                        <p class="small-fs">Toda comprar mayor a {{ maxPriceWithoutTax }} USD tendrá un impuesto del {{ maxPriceTax * 100 }}%</p>
                     </div>
 
                     <div v-if="weight == 0" class="precio-detail">
@@ -84,15 +84,15 @@
                     </div>
 
                     <div v-if="weight == 1" class="precio-detail">
-                        <p class="medium-fs">Costo de envío: USD 15</p>
+                        <p class="medium-fs">Costo de envío: S. {{ 15 * dolarPrice }}</p>
                     </div>
 
                     <div v-if="weight > 1" class="precio-detail">
-                        <p class="medium-fs">Costo de envío: USD {{ Math.ceil(weight * pricePerPound) }}</p>
+                        <p class="medium-fs">Costo de envío: S. {{ (weight * (pricePerPound * dolarPrice)).toFixed(2) }}</p>
                     </div>
 
                     <div class="precio-detail">
-                        <p class="large-fs">Total: USD {{ Math.ceil(total) }}</p>
+                        <p class="large-fs">Total: S. {{ (total * this.dolarPrice).toFixed(2) }}</p>
                     </div>
                     
                     <!--<p>Agreegar el producto al carrito para conocer los costos de envio</p>-->
@@ -165,6 +165,8 @@
                 weight:0,
                 maxPriceWithoutTax:0,
                 maxPriceTax:0,
+                dolarPrice:0,
+                earnPercentage:0,
                 pricePerPound:0,
                 total:0,
                 showAddToCartButton:false
@@ -249,6 +251,8 @@
                 this.weight = 0
                 this.maxPriceWithoutTax = res.data.configuration.max_price_without_tax
                 this.maxPriceTax = res.data.configuration.price_tax_percent
+                this.dolarPrice = res.data.configuration.dolar_price
+                this.earnPercentage = res.data.configuration.earn_percentage
                 this.pricePerPound = res.data.configuration.price_per_pound                    
                 let weightTax = 0
                 let priceTax = 0
@@ -278,19 +282,19 @@
                         }
                     }
 
-                    if(weight == 1){
+                    if(weight <= 1){
                         weightTax = 15;
                     }else if(weight > 1){
-                        weightTax = this.weight * this.pricePerPound
+                        weightTax = this.weight * (this.pricePerPound * this.dolarPrice)
                     }
 
                 }
 
                 if(this.price > this.maxPriceWithoutTax){
-                    priceTax = this.price * this.maxPriceTax
+                    priceTax = (this.price * this.maxPriceTax)*this.dolarPrice
                 }
 
-                this.total = this.price + weightTax + priceTax
+                this.total = this.price + (this.price * this.earnPercentage) + weightTax + priceTax
 
             },
             checkAvailability(){

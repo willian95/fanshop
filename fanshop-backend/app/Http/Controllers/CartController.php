@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Models\Configuration;
 use Auth;
 
 class CartController extends Controller
@@ -69,10 +70,9 @@ class CartController extends Controller
         try{
 
             $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
-
             $cart = Cart::where("user_id", $auth->id)->with("product")->get();
 
-            return response()->json(["products" => $cart]);
+            return response()->json(["products" => $cart, "configuration" => Configuration::first()]);
 
         }catch(\Exception $e){
 

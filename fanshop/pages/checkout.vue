@@ -62,7 +62,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="null" :showErase="false" :showUpdateAmount="false"/>
+                                        <CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="null" :showErase="false" :showUpdateAmount="false" :dolarPrice="configuration.dolar_price"/>
 
                                     </tbody>
                                 </table>
@@ -186,6 +186,7 @@
                 doSubmit:false,
                 token:"",
                 description:"Fanshop payment",
+                configuration:[],
 
                 errors:[]
             }
@@ -201,6 +202,7 @@
 
 					let res = await this.$axios.get("cart/fetch")
 					this.products = res.data.products
+                    this.configuration = res.data.configuration
 					this.getTotal()
 
 				}catch(err){
@@ -281,7 +283,7 @@
             getInstallments(){
                 window.Mercadopago.getInstallments({
                     "payment_method_id": this.paymentMethodId,
-                    "amount": Math.ceil(parseFloat(this.total)),
+                    "amount": parseFloat(this.total).toFixed(2),
                     "issuer_id": parseInt(this.issuer)
                 }, this.setInstallments);
             },
@@ -308,7 +310,7 @@
 					
 				})
 
-                this.total = this.total * 3.63
+                this.total = this.total * this.configuration.dolar_price
 
             },
 
@@ -346,7 +348,7 @@
                 let installments = document.getElementById("installments").value
                 let docType = document.getElementById("docType").value
                 let docNumber = document.getElementById("docNumber").value
-                let res = await this.$axios.post("/checkout", {transactionAmount: Math.ceil(this.total), usdTotal: Math.ceil(this.total / 3.63), token: this.token, description: this.description, installments: installments, paymentMethodId: this.paymentMethodId, issuer: this.issuer, email: this.email, docType: docType, docNumber: docNumber, phone:this.phone, address:this.address})
+                let res = await this.$axios.post("/checkout", {transactionAmount: this.total.toFixed(2), usdTotal: this.total / this.configuration.dolar_price, token: this.token, description: this.description, installments: installments, paymentMethodId: this.paymentMethodId, issuer: this.issuer, email: this.email, docType: docType, docNumber: docNumber, phone:this.phone, address:this.address, dolarPrice: this.configuration.dolar_price})
 
                 this.loading = false
 
