@@ -24,7 +24,9 @@ class PurchaseController extends Controller
 
             return response()->json(["success" => true, "purchases" => $purchases, "purchasesCount" => $purchasesCount, "dataAmount" => $dataAmount]);
 
-        }catch(\Exception $e){
+        }catch(\Exception $e){  
+
+            return response()->json(["success" => false, "err" => $e->getMessage(), "ln" => $e->getLine()]);
 
         }
 
