@@ -87,7 +87,7 @@ class CartController extends Controller
         try{
 
             $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
-            $cart = Cart::where("user_id", $auth->id)->where("product_id", $request->id)->first();
+            $cart = Cart::where("user_id", $auth->id)->where("id", $request->id)->first();
             $cart->delete();
 
             return response()->json(["success" => true, "msg" => "Producto eliminado"]);
