@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('order:retrieve')->everyThirtyMinutes();
+        $schedule->command('order:retrieve')->everyMinute();
     }
 
     /**

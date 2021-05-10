@@ -73,6 +73,8 @@ class OrderRetrieve extends Command
 
             }
 
+            $this->sendAdminEmail($purchase);
+
             
 
         }
