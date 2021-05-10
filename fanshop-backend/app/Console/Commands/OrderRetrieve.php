@@ -63,11 +63,13 @@ class OrderRetrieve extends Command
             //dump($response->code);
             if($purchase->zinc_api_code != $response->code){
 
-                $this->sendAdminEmail($purchase);
+                
 
                 $purchase->zinc_api_code = $response->code;
                 $purchase->zinc_api_message = $response->message;
                 $purchase->update();
+
+                $this->sendAdminEmail($purchase);
 
             }
 
