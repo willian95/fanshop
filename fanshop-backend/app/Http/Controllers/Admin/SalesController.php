@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Purchase;
 use App\Models\PurchaseProduct;
+use App\Http\Requests\TrackingStoreRequest;
+use App\Models\Tracking;
 use Carbon\Carbon;
 use Auth;
 
@@ -19,7 +21,7 @@ class SalesController extends Controller
         $dataAmount = 15;
         $skip = ($request->page-1) * 15;
 
-        $purchases = Purchase::with("purchaseProducts", "user", "purchaseProducts.product")->skip($skip)->take($dataAmount);
+        $purchases = Purchase::with("purchaseProducts", "user", "purchaseProducts.product", "trackings")->skip($skip)->take($dataAmount);
 
         if($request->orderBy == 1){
 
@@ -121,6 +123,51 @@ class SalesController extends Controller
 
         }
 
+
+    }
+
+    function addTracking(TrackingStoreRequest $request){
+
+        try{
+
+            $tracking = new Tracking;
+            $tracking->tracking = $request->tracking;
+            $tracking->url = $request->url;
+            $tracking->purchase_id = $request->purchaseId;
+            $tracking->save();
+
+            return response()->json(["success" => true, "msg" => "Tracking añadido"]);
+
+        }catch(\Exception $e){
+
+            return response()->json(["success" => false, "msg" => "Algo salió mal", "err" => $e->getMessage(), "ln" => $e->getLine()]);
+
+        }
+
+    }
+
+    function fetchTracking($purchaseId){
+
+        try{
+
+            $trackings = Tracking::where("purchase_id", $purchaseId)->get();
+
+            return response()->json(["success" => true, "trackings" => $trackings]);
+
+        }catch(\Exception $e){
+
+            return response()->json(["success" => false, "msg" => "Algo salió mal", "err" => $e->getMessage(), "ln" => $e->getLine()]);
+
+        }
+
+    }
+
+    function deleteTracking(Request $request){
+
+        $tracking = Tracking::where("id", $request->id)->first();
+        $tracking->delete();
+
+        return response()->json(["success" => true, "msg" => "Tracking eliminado"]);
 
     }
 

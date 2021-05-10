@@ -81,6 +81,13 @@
 									</NuxtLink>
 								</li>
 
+								<li class="menu-item" aria-haspopup="true">
+									<NuxtLink :to="{ path: '/'}" href="#" class="menu-link">
+										<i class="menu-icon flaticon-user-add"></i>
+										<span class="menu-text w-100">Volver a la tienda</span>
+									</NuxtLink>
+								</li>
+
 								
 							</ul>
 							<!--end::Menu Nav -->

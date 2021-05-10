@@ -8,6 +8,7 @@ use App\Models\Purchase;
 use App\Models\PurchaseProduct;
 use App\Models\MercadoPagoDetailedStatusMessage;
 use Illuminate\Support\Str;
+use App\Models\User;
 use Auth;
 
 use MercadoPago\Item;
@@ -24,6 +25,8 @@ class CheckoutController extends Controller
      
         SDK::setAccessToken(env("MP_SECRET"));
         $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
+
+        $this->updateUserData($request);
 
         $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
         $requestId = $this->zincapiProductCategorize($cartProducts)->request_id;
@@ -65,10 +68,16 @@ class CheckoutController extends Controller
             return response()->json(["success" => false, "msg" => $status, "title" => "Hubo un problema con su pago"]);
         }
         
-    
-
     }
 
+    function updateUserData($request){
+
+        $user = User::find(\Auth::user()->id);
+        $user->phone = $request->phone;
+        $user->address = $request->address;
+        $user->update();
+
+    }
 
     function storePurchase($payment, $auth, $request, $requestId, $requestResponse){
 
@@ -109,7 +118,7 @@ class CheckoutController extends Controller
             $purchaseProduct->purchase_id = $purchase->id;
             $purchaseProduct->save();
 
-            //$this->deleteProductFromCart($product);
+            $this->deleteProductFromCart($product);
 
         }
 
@@ -246,6 +255,21 @@ class CheckoutController extends Controller
         curl_close($ch);
 
         return json_decode($output);
+
+    }
+
+    function sendEmail(){
+
+        $data = ["purchasedProducts" => $purchase->purchaseProducts, "purchaseIndex" => $purchase->purchase_index, "name" => \Auth::user()->name." ".\Auth::user()->lastname];
+        $to_name = \Auth::user()->name;
+        $to_email = \Auth::user()->email;
+
+        \Mail::send("emails.adminPurchaseNotification", $data, function($message) use ($to_name, $to_email) {
+
+            $message->to($to_email, $to_name)->subject("¡Haz realizado una compra!");
+            $message->from( env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+
+        });
 
     }
 

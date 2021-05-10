@@ -23,7 +23,7 @@ class RecommendationController extends Controller
         $response = Http::withHeaders([
             'axesso-api-key' => env('AXESSO_KEY'),
             'Content-Type' => 'application/json'
-        ])->get('http://api-prd.axesso.de/amz/amazon-search-by-keyword-asin?keyword='.$asin.'&domainCode=com&sortBy=relevanceblender&page='.rand(1, 30));
+        ])->get('http://api-prd.axesso.de/amz/amazon-search-by-keyword-asin?keyword='.$asin.'&domainCode=com&prime=true&sortBy=relevanceblender&page='.rand(1, 30));
         
         return $response->json();
 

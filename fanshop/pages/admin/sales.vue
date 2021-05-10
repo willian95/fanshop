@@ -4,6 +4,9 @@
 
         <PurchaseModal :products="products" :toggleProducts="toggleProducts" :checkTest="checkTest" :selectedProducts="selectedProducts" :dateFormatter="dateFormatter" :purchaseDetails="purchaseDetails"/>
         <loading :loading="loading" />
+
+        <TrackingModal :purchaseId="purchaseId"/>
+
         <!--begin::Container-->
         <div class="container">
             <!--begin::Card-->
@@ -65,6 +68,7 @@
                                     </td>
                                     <td>
                                         <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                        <button class="btn btn-warning" data-toggle="modal" data-target=".trackingModal" @click="setTracking(purchase)">tracking</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -92,12 +96,13 @@
     import Loading from '../../components/Loading';
     import Paginator from '../../components/Paginator';
     import PurchaseModal from '../../components/admin/sales/PurchaseModal';
+    import TrackingModal from '../../components/admin/sales/TrackingModal';
 
     export default {
         layout: 'admin/admin',
         middleware:["auth", "admin"],
         auth:"auth",
-        components:{Paginator, Loading, PurchaseModal},
+        components:{Paginator, Loading, PurchaseModal, TrackingModal},
         data(){
 			return{
 				purchases:[],
@@ -105,6 +110,8 @@
                 statusDetails:[],
                 selectedProducts:[],
                 purchaseDetails:"",
+                trackings:[],
+                purchaseId:"",
                 orderBy:1,
                 page:1,
                 pages:1,
@@ -168,6 +175,10 @@
             setProducts(products){
                 this.purchaseDetails = products
                 this.products = products.purchase_products
+            },
+            setTracking(purchase){
+                this.trackings = purchase.trackings
+                this.purchaseId = purchase.id
             },
             toggleProducts(id, amount, asin){
 

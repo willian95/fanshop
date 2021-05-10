@@ -1,6 +1,55 @@
 <template>
   	<section class="container mt-150 carrito">
 		<loading :loading="loading" />
+
+        <!-- Modal -->
+        <div class="modal fade trackingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Trackings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="container">
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tracking</th>
+                                            <th>Url</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="tracking in trackings" v-bind:key="tracking.id">
+                                            <td>
+                                                {{ tracking.tracking }}
+                                            </td>
+                                            <td>
+                                                <a :href="tracking.url">{{ tracking.url }}</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    
+                    <button class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
     	<div class="row">
 
             <!-- Modal -->
@@ -73,6 +122,7 @@
                                     </td>
                                     <td>
                                         <button @click="setProducts(purchase.purchase_products)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                        <button @click="setTracking(purchase.trackings)" class="btn btn-info" data-toggle="modal" data-target=".trackingModal">tracking</button>
                                     </td>
                                 </tr>
                 			</tbody>
@@ -107,7 +157,8 @@
                 statusDetails:[],
                 page:1,
                 pages:1,
-				loading:false
+				loading:false,
+                trackings:[]
 			}
 		},
 		methods:{
@@ -154,6 +205,11 @@
             setPage(page){
 
                 this.fetch(page)
+
+            },
+            setTracking(trackings){
+
+                this.trackings = trackings
 
             },
             dateFormatter(date){

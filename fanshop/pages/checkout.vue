@@ -5,7 +5,41 @@
         <div class="row">
             <div class="col-md-8">
 
-                <UserFormData :name="name" :lastname="lastname" :email="email" :phone="phone" :address="address" />
+                <!--<UserFormData :name="name" :lastname="lastname" :email="email" :phone="phone" :address="address" />-->
+                <div class="shadow-card">
+                    <div class='title-general title-general2'>
+                        <h1>Datos</h1>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+
+                            <input type="text" class="form-control" id="inputEmail4" placeholder="Nombre" v-model="name" readonly>
+
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input type="text" class="form-control" id="inputEmail4" placeholder="Apellido" v-model="lastname" readonly>
+
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+
+                            <input type="text" class="form-control" id="inputEmail4" placeholder="Email" v-model="email" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+
+                            <input type="text" class="form-control" id="phoneInput" placeholder="phone" v-model="phone">
+
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="text" class="form-control" id="addressInput" placeholder="Dirección" v-model="address">
+                        </div>
+
+                    </div>
+
+                </div>
 
                 <div class="row">
                     <div class="col-12">
@@ -171,6 +205,25 @@
 
 				}catch(err){
 
+                    if(err.response.data.error){
+                        
+                        this.$swal({
+                            icon: 'error',
+                            text: err.response.data.error,
+                        })
+                    }
+                    if(err.response.data.errors){
+
+                        this.$swal({
+                            icon: 'error',
+                            text: "Hay campos que debes revisar",
+                            toast: true,
+                            position: 'top-end',
+                        })
+
+                        this.errors = err.response.data.errors
+                    }
+
 				}
 				this.loading = false
 				
@@ -293,7 +346,7 @@
                 let installments = document.getElementById("installments").value
                 let docType = document.getElementById("docType").value
                 let docNumber = document.getElementById("docNumber").value
-                let res = await this.$axios.post("/checkout", {transactionAmount: Math.ceil(this.total), usdTotal: Math.ceil(this.total / 3.63), token: this.token, description: this.description, installments: installments, paymentMethodId: this.paymentMethodId, issuer: this.issuer, email: this.email, docType: docType, docNumber: docNumber})
+                let res = await this.$axios.post("/checkout", {transactionAmount: Math.ceil(this.total), usdTotal: Math.ceil(this.total / 3.63), token: this.token, description: this.description, installments: installments, paymentMethodId: this.paymentMethodId, issuer: this.issuer, email: this.email, docType: docType, docNumber: docNumber, phone:this.phone, address:this.address})
 
                 this.loading = false
 
@@ -334,12 +387,42 @@
                     error = true
                 }
 
+                if(this.phone == "" || this.phone == null){
+                    this.$swal({
+                        icon: 'error',
+                        toast:true,
+                        position:"top-end",
+                        text: "Teléfono es requerido",
+                    })
+                    error = true
+                }
+
+                if(this.address == "" || this.address == null){
+                    this.$swal({
+                        icon: 'error',
+                        toast:true,
+                        position:"top-end",
+                        text: "Dirección es requerida",
+                    })
+                    error = true
+                }
+
                 if(document.getElementById("docType").value == ""){
                     this.$swal({
                         icon: 'error',
                         toast:true,
                         position:"top-end",
                         text: "Tipo de documento es requerido",
+                    })
+                    error = true
+                }
+
+                if(document.getElementById("cardNumber").value == ""){
+                    this.$swal({
+                        icon: 'error',
+                        toast:true,
+                        position:"top-end",
+                        text: "Número de tarjeta es requerido",
                     })
                     error = true
                 }

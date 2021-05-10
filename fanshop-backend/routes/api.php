@@ -79,4 +79,8 @@ Route::group([
     Route::post("admin/email-account/update", [EmailAccountController::class, "update"]);
     Route::post("admin/email-account/delete", [EmailAccountController::class, "delete"]);
 
+    Route::post("admin/tracking/store", [SalesController::class, "addTracking"]);
+    Route::get("admin/tracking/fetch/{purchaseId}", [SalesController::class, "fetchTracking"]);
+    Route::post("admin/tracking/delete", [SalesController::class, "deleteTracking"]);
+
 });

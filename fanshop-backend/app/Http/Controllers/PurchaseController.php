@@ -18,9 +18,9 @@ class PurchaseController extends Controller
             $dataAmount = 15;
             $skip = ($request->page-1) * 15;
 
-            $purchases = Purchase::with("purchaseProducts", "user", "purchaseProducts.product")->where("user_id", $auth->id)->skip($skip)->take($dataAmount)->orderBy('id', 'desc')->get();
+            $purchases = Purchase::with("purchaseProducts", "user", "purchaseProducts.product", "trackings")->where("user_id", $auth->id)->skip($skip)->take($dataAmount)->orderBy('id', 'desc')->get();
             
-            $purchasesCount = Purchase::with("purchaseProducts", "user", "purchaseProducts.product")->where("user_id", $auth->id)->orderBy('id', 'desc')->count();
+            $purchasesCount = Purchase::with("purchaseProducts", "user", "purchaseProducts.product", "trackings")->where("user_id", $auth->id)->orderBy('id', 'desc')->count();
 
             return response()->json(["success" => true, "purchases" => $purchases, "purchasesCount" => $purchasesCount, "dataAmount" => $dataAmount]);
 

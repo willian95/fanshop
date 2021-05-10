@@ -21,13 +21,13 @@
             </div>
             <div class="form-group col-md-6">
 
-                <input type="text" class="form-control" id="inputEmail4" placeholder="phone" v-model="phone" readonly>
+                <input type="text" class="form-control" id="phoneInput" placeholder="phone" v-model="phone">
 
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
-                <input type="text" class="form-control" id="inputEmail4" placeholder="Dirección" v-model="address" readonly>
+                <input type="text" class="form-control" id="addressInput" placeholder="Dirección" v-model="address">
             </div>
 
         </div>

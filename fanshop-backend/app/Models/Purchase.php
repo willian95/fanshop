@@ -21,4 +21,10 @@ class Purchase extends Model
 
     }
 
+    public function trackings(){
+
+        return $this->hasMany(Tracking::class);
+
+    }
+
 }
