@@ -222,7 +222,6 @@
                 let res = await this.$axios.post('/product', {"id": this.id, "searchType":this.searchType})
                 
                 if(res.data.product.imageUrlList){
-                    console.log("product", res.data.product)
                     this.fullObject = res.data.product
                     this.id = res.data.product.asin
                     this.images = res.data.product.imageUrlList
@@ -253,10 +252,12 @@
                 this.pricePerPound = res.data.configuration.price_per_pound                    
                 let weightTax = 0
                 let priceTax = 0
-
-                if(res.data.productDetails != null){
-                    let weight = res.data.product.productDetails.filter(data => { if(data.name .toLowerCase() == "item weight") return data.value  })
+           
+                if(res.data.product.productDetails != null){
+                    
+                    let weight = res.data.product.productDetails.filter(data => { if(data.name.toLowerCase() == "item weight") return data.value  })
                     this.weight = 0
+
                     if(weight.length > 0){
                         if( weight[0]["value"].toLowerCase().indexOf("pound") > -1){
                             weight = weight[0]["value"].toLowerCase().substring(0, weight[0]["value"].indexOf("pound"))
