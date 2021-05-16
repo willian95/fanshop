@@ -1,12 +1,13 @@
 <template>
     <section class="producto mt-50" id="productos">
-		<div class="container mt-5">
+		<div class="container">
 			<div class="title-general">
 				<h1>Ofertas</h1>
 			</div>
         </div>
         <loading :loading="loading" />
-        <div class="row">
+      <div class="container">
+            <div class="row">
             <div class="col-md-3 mt-4" v-for="product in products" v-bind:key="product.id">
                 <ProductCard :image="product.imgUrl" :price="product.price" :dolarPrice="configuration.dolar_price" :earnPercentage="configuration.earn_percentage" :title="product.productDescription" :id="product.asin" :searchType="search.type" />
             </div>
@@ -19,6 +20,7 @@
             </div>
 
         </div>
+      </div>
     </section>
     
 </template>
