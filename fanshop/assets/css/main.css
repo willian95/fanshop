@@ -2772,7 +2772,9 @@ nav {
 	padding: 19px 40px;
 	line-height: 0;
 	margin: 0;
-	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 .large-fs {
 	font-weight: 500;
@@ -2797,6 +2799,19 @@ nav {
     border: 0;
     padding: 20px 4rem;
 }
+.btn-logot{
+	font-size: 13px;
+	background: transparent;
+	color: #ff6a00!important;
+	border: 1px solid;
+	padding: 10px 13px;
+	height: 30px;
+	line-height: 0;
+	display: flex;
+	align-items: center;
+	margin-top: 4px;
+}
+
 @media (min-width: 0px) and (max-width: 768px) {
 	#login .card,  #register .card {
     box-shadow: 0px 0px 13px rgb(0 0 0 / 16%);

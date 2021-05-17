@@ -30,6 +30,12 @@
 							<li class="nav-item mr-5 pr-3">
 						<NuxtLink :to="{ path: '/cart' }"><img style="width: 20px" src="/img/shopping-cart.svg" alt=""></NuxtLink>
 					</li>
+						<li class="nav-item mr-5" v-if="isAuthenticated">
+								<NuxtLink :to="{ path: '/profile'}">{{ $auth.user.name }}</NuxtLink>
+							</li>
+							<li class="nav-item mr-5" v-if="isAuthenticated && $auth.user.role_id == 2">
+								<NuxtLink  :to="{ path: '/purchases'}">Compras</NuxtLink>
+							</li>
 
 					
 							</div>
@@ -50,17 +56,13 @@
 							<li class="nav-item mr-5">
 								<a class="nav-link" data-scroll="" href="#team-about">contacto</a>
 							</li>
-								<li class="nav-item mr-5" v-if="isAuthenticated">
-								<NuxtLink :to="{ path: '/profile'}">{{ $auth.user.name }}</NuxtLink>
-							</li>
-							<li class="nav-item mr-5" v-if="isAuthenticated && $auth.user.role_id == 2">
-								<NuxtLink :to="{ path: '/purchases'}">Compras</NuxtLink>
-							</li>
+							
 							<li class="nav-item mr-5" v-if="isAuthenticated && $auth.user.role_id == 1">
 								<NuxtLink :to="{ path: '/admin/dashboard'}">Admin panel</NuxtLink>
 							</li>
 							<li class="nav-item mr-5" v-if="isAuthenticated">
-								<button class="btn btn-info" @click="logout()">Cerrar sesión</button>
+								<button class="btn btn-info btn-logot" @click="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i>
+Cerrar sesión</button>
 							</li>
 							<li class="nav-item p-nones" v-if="!isAuthenticated">
 								<NuxtLink :to="{ path: '/register'}" class="nav-link"><i class="fas fa-user fas-icon icon-sesion"></i><p>Registrar</p></NuxtLink>
