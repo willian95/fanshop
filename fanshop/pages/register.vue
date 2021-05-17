@@ -31,7 +31,7 @@
                                 <label for="password">Clave</label>
                                 <div class="d-flex">
                                     <input :type="passwordInputType" class="form-control" v-model="password">
-                                    <button class="btn btn-info" type="button" @click="passwordInputChange()">ver</button>
+                                    <button class="btn btn-info btn-view ml-3" type="button" @click="passwordInputChange()"><i class="fa fa-lock" aria-hidden="true"></i></button>
                                 </div>
                                 <ErrorShow :error="errors" :name="'password'"/>
                             </div>
@@ -40,7 +40,7 @@
                                 <label for="password">Repetir clave</label>
                                 <div class="d-flex">
                                     <input :type="passwordConfirmationInputType" class="form-control" v-model="passwordConfirmation">
-                                    <button class="btn btn-info" type="button" @click="passwordConfirmationInputChange()">ver</button>
+                                    <button class="btn btn-info btn-view ml-3" type="button" @click="passwordConfirmationInputChange()"><i class="fa fa-lock" aria-hidden="true"></i></button>
                                 </div>
 
                             </div>
@@ -49,8 +49,9 @@
                                 <button class="btn btn-primary" type="submit">Registrarme</button>
                             </p>
 
-                            <p class="text-center">
-                                <NuxtLink :to="{ path: '/login'}">¿Posees cuenta? Ingresa</NuxtLink>
+                            <p class="text-center  txt-styles">
+                                <NuxtLink :to="{ path: '/login'}"><i class="fa fa-sign-in" aria-hidden="true"></i>
+¿Posees cuenta? Ingresa</NuxtLink>
                             </p>
 
                         </form>

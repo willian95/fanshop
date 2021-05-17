@@ -1,7 +1,7 @@
 <template> 
     <div>
 
-        <VueSlickCarousel :arrows="false" :dots="false">
+        <VueSlickCarousel :arrows="false" :dots="false" class="">
 
             <div>
                 <img class="img-responsive" src="/img/banner.png" />

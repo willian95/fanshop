@@ -6,7 +6,7 @@
             <div class="col-md-6 offset-md-3">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="text-center">Login</h3>
+                        <h3 class="text-center mb-3">Inicio de sesión</h3>
                         <form @submit.prevent="login">
                             
                             <div class="form-group">
@@ -19,7 +19,8 @@
                                 <label for="password">Clave</label>
                                 <div class="d-flex">
                                     <input :type="passwordInputType" class="form-control" v-model="password">
-                                    <button class="btn btn-info" type="button" @click="passwordInputChange()">ver</button>
+                                    <button class="btn btn-info btn-view ml-3" type="button" @click="passwordInputChange()"><i class="fa fa-eye" aria-hidden="true"></i>
+</button>
                                 </div>
                                 <ErrorShow :error="errors" :name="'password'"/>
                             </div>
@@ -29,12 +30,14 @@
                                 <button class="btn btn-primary" type="submit">Ingresar</button>
                             </p>
 
-                            <p class="text-center">
-                                <NuxtLink :to="{ path: '/register'}">¿No posees cuenta? Registrate</NuxtLink>
+                            <p class="text-center txt-styles">
+                                <NuxtLink :to="{ path: '/register'}"><i class="fa fa-user" aria-hidden="true"></i>
+¿No posees cuenta? Registrate</NuxtLink>
                             </p>
 
-                            <p class="text-center">
-                                <NuxtLink :to="{ path: '/forgot-password'}">¿Olvidaste tu contraseña?</NuxtLink>
+                            <p class="text-center txt-styles">
+                                <NuxtLink :to="{ path: '/forgot-password'}"><i class="fa fa-lock" aria-hidden="true"></i>
+¿Olvidaste tu contraseña?</NuxtLink>
                             </p>
 
                         </form>
