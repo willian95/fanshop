@@ -29,7 +29,8 @@ class ProfileUpdateRequest extends FormRequest
             "email" => "required|email",
             "address" => "required",
             "phone" => "required",
-            "password" => "nullable|confirmed|min:8"
+            "password" => "nullable|confirmed|min:8",
+            "dni" => "required"
         ];
     }
 
@@ -43,7 +44,8 @@ class ProfileUpdateRequest extends FormRequest
             "address.required" => "Dirección es requerida",
             "phone.required" => "Teléfono es requerido",
             "password.confirmed" => "Contraseñas no coinciden",
-            "password.min" => "Contraseña debe tener al menos caracteres"
+            "password.min" => "Contraseña debe tener al menos caracteres",
+            "dni.required" => "DNI es requerido",
         ];
     }
 }

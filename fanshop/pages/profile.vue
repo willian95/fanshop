@@ -16,18 +16,20 @@
                 <div class=" row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <input placeholder="Nombre" type="text" autocomplete="off" class="form-control" v-model="name">
+                            <label>Nombre</label>
+                            <input placeholder="Ingresa tu nombre" type="text" autocomplete="off" class="form-control" v-model="name">
                             <ErrorShow :error="errors" :name="'name'"/>
 
                         </div>
                         <div class="form-group">
-
-                            <input placeholder="Email" disabled type="text" autocomplete="off" class="form-control" id="email" aria-describedby="emailHelp" v-model="email">
+                            <label>Correo</label>
+                            <input placeholder="Ingresa tu email" disabled type="text" autocomplete="off" class="form-control" id="email" aria-describedby="emailHelp" v-model="email">
                             <ErrorShow :error="errors" :name="'email'"/>
 
                         </div>
                         <div class="form-group">
-                            <input placeholder="Telefono" type="tel" class="form-control  " id="password" v-model="phone">
+                            <label>Teléfono</label>
+                            <input placeholder="Ingresa tu número telefónico" type="tel" class="form-control  " id="password" v-model="phone">
                             <ErrorShow :error="errors" :name="'phone'"/>
 
 
@@ -36,15 +38,24 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <input placeholder="Apellido" type="text" autocomplete="off" class="form-control" v-model="lastname">
+                            <label>Apellido</label>
+                            <input placeholder="Ingresa tu apellido" type="text" autocomplete="off" class="form-control" v-model="lastname">
                             <ErrorShow :error="errors" :name="'lastname'"/>
 
                         </div>
                         <div class="form-group">
 
-
-                            <input placeholder="Dirección" type="text" class="form-control  " id="password" v-model="address">
+                            <label>Dirección</label>
+                            <input placeholder="Ingresa tu dirección" type="text" class="form-control  " id="password" v-model="address">
                             <ErrorShow :error="errors" :name="'address'"/>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>DNI</label>
+                            <input placeholder="Ingresa tu dni" type="text" class="form-control  " id="password" v-model="dni">
+                            <ErrorShow :error="errors" :name="'dni'"/>
 
                         </div>
     
@@ -53,8 +64,10 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
+                            <label>Contraseña</label>
                             <div class="d-flex">
-                                <input placeholder="Contraseña" :type="passwordInputType" autocomplete="off" class="form-control" v-model="password">
+                                
+                                <input :type="passwordInputType" autocomplete="off" class="form-control" v-model="password">
                                 <button class="btn btn-info" type="button" @click="passwordInputChange()">ver</button>
                             </div>
                             <ErrorShow :error="errors" :name="'password'"/>
@@ -63,8 +76,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
+                            <label>Repertir contraseña</label>
                             <div class="d-flex">
-                                <input placeholder="Repetir contraseña" :type="passwordConfirmationInputType" autocomplete="off" class="form-control" v-model="passwordConfirmation">
+                                
+                                <input  :type="passwordConfirmationInputType" autocomplete="off" class="form-control" v-model="passwordConfirmation">
                                 <button class="btn btn-info" type="button" @click="passwordConfirmationInputChange()">ver</button>
                             </div>
                         </div>
@@ -109,6 +124,7 @@
                 address:this.$auth.user.address == "null" ? '': this.$auth.user.address,
                 email:this.$auth.user.email,
                 phone:this.$auth.user.phone == "null" ? '': this.$auth.user.phone,
+                dni:this.$auth.user.rut,
                 password:"",
                 passwordConfirmation:"",
                  passwordInputType:"password",
@@ -166,9 +182,27 @@
                 formData.append("phone", this.phone)
                 formData.append("password", this.password)
                 formData.append("password_confirmation", this.passwordConfirmation)
+                formData.append("dni", this.dni)
 
                 try{
                     let res = await this.$axios.post("/profile/update", formData)
+
+                    if(res.data.success == true){
+
+                        this.$swal({
+                            text: res.data.msg,
+                            icon:"success"
+                        })
+
+                    }else{
+
+                        this.$swal({
+                            text: res.data.msg,
+                            icon:"error"
+                        })
+
+                    }
+
                 }catch(err){
 
                     this.errors = err.response.data.errors

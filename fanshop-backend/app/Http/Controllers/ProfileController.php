@@ -20,11 +20,16 @@ class ProfileController extends Controller
                 return response()->json(["success" => false, "msg" => "Éste email ya está en uso"]);
             }
 
+            if(User::where("rut", $request->dni)->where("id", "<>", $auth->id)->count() > 0){
+                return response()->json(["success" => false, "msg" => "Éste DNI ya está en uso"]);
+            }
+
             $user = User::find($auth->id);
             $user->email = $request->email;
             $user->phone = $request->phone;
             $user->address = $request->address;
             $user->name = $request->name;
+            $user->rut = $request->dni;
             $user->lastname = $request->lastname;
 
             if(isset($request->password)){

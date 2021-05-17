@@ -14,30 +14,43 @@
                         <div class="form-group col-md-6">
 
                             <input type="text" class="form-control" id="inputEmail4" placeholder="Nombre" v-model="name" readonly>
+                            <ErrorShow :error="errors" :name="'name'"/>
 
                         </div>
                         <div class="form-group col-md-6">
                             <input type="text" class="form-control" id="inputEmail4" placeholder="Apellido" v-model="lastname" readonly>
-
+                            <ErrorShow :error="errors" :name="'lastname'"/>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
 
                             <input type="text" class="form-control" id="inputEmail4" placeholder="Email" v-model="email" readonly>
+                            <ErrorShow :error="errors" :name="'email'"/>
                         </div>
                         <div class="form-group col-md-6">
 
                             <input type="text" class="form-control" id="phoneInput" placeholder="phone" v-model="phone">
+                            <ErrorShow :error="errors" :name="'phone'"/>
 
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <input type="text" class="form-control" id="addressInput" placeholder="Dirección" v-model="address">
+                        <div class="form-group col-md-6">
+                            <input type="text" class="form-control" id="dni" placeholder="DNI" v-model="dni">
+                            <ErrorShow :error="errors" :name="'dni'"/>
                         </div>
 
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="text" class="form-control" id="addressInput" placeholder="Dirección" v-model="address">
+                            <ErrorShow :error="errors" :name="'address'"/>
+                        </div>
+
+                    </div>
+
+                    
 
                 </div>
 
@@ -170,12 +183,15 @@
         data(){
 
             return{
-
+                errors:[],
+                dni:this.$auth.user.rut,
                 name:this.$auth.user.name,
                 lastname:this.$auth.user.lastname,
                 email:this.$auth.user.email,
                 phone:this.$auth.user.phone,
                 address:this.$auth.user.address,
+                rut:this.$auth.user.rut,
+                emailVerified: this.$auth.user.email_verified_at,
                 products:[],
 				loading:false,
                 total:0,
@@ -314,12 +330,57 @@
 
             },
 
-            getCardToken(){
+            async getCardToken(){
 
                 let $form = document.getElementById('paymentForm');
 
                 if(this.checkFields()){
-                    window.Mercadopago.createToken($form, this.setCardTokenAndPay);
+                    
+                    this.errors = []
+                    this.loading = true
+
+                    let formData = new FormData()
+                    formData.append("name", this.name)
+                    formData.append("lastname", this.lastname)
+                    formData.append("address", this.address)
+                    formData.append("email", this.email)
+                    formData.append("phone", this.phone)
+                    formData.append("password", this.password)
+                    formData.append("password_confirmation", this.passwordConfirmation)
+                    formData.append("dni", this.dni)
+
+                    try{
+                        let res = await this.$axios.post("/profile/update", formData)
+                        this.loading = false
+                        if(res.data.success == true){
+
+                            this.$swal({
+                                text: res.data.msg,
+                                icon:"success"
+                            }).then(ans => {
+
+                                window.Mercadopago.createToken($form, this.setCardTokenAndPay);
+
+                            })
+
+                            return true
+
+                        }else{
+
+                            this.$swal({
+                                text: res.data.msg,
+                                icon:"error"
+                            })
+                            return false
+                        }
+
+                    }catch(err){
+
+                        this.errors = err.response.data.errors
+                        return false
+
+                    }
+
                 }
 
                 
@@ -376,9 +437,20 @@
 
             },
 
-            checkFields(){
+            async checkFields(){
 
                 let error = false
+
+                if(this.emailVerified == "" || this.emailVerified == null){
+                    this.$swal({
+                        icon: 'error',
+                        toast:true,
+                        position:"top-end",
+                        text: "Debes verificar tu email para continuar",
+                    })
+                    error = true
+                }
+
                 if(this.email == ""){
                     this.$swal({
                         icon: 'error',
@@ -395,6 +467,16 @@
                         toast:true,
                         position:"top-end",
                         text: "Teléfono es requerido",
+                    })
+                    error = true
+                }
+
+                if(this.dni == "" || this.dni == null){
+                    this.$swal({
+                        icon: 'error',
+                        toast:true,
+                        position:"top-end",
+                        text: "DNI es requerido",
                     })
                     error = true
                 }
@@ -511,9 +593,11 @@
 
                 if(error == true){
                     return false
-                }
+                }else{
 
-                return true
+                    this.updateProfile()
+
+                }
             },
 
             isNumber(evt) {
@@ -524,6 +608,10 @@
                 } else {
                     return true;
                 }
+            },
+
+            async updateProfile(){
+
             }
 
 
