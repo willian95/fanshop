@@ -30,7 +30,7 @@ class SearchController extends Controller
         $response = Http::withHeaders([
             'axesso-api-key' => env('AXESSO_KEY'),
             'Content-Type' => 'application/json'
-        ])->get('http://api-prd.axesso.de/amz/amazon-search-by-keyword-asin?keyword='.$queryWord.'&domainCode=com&prime=true&sortBy=relevanceblender&page='.$page);
+        ])->get('http://api-prd.axesso.de/amz/amazon-search-by-keyword-asin?keyword='.$queryWord.'&domainCode=com&sortBy=relevanceblender&page='.$page);
         
         
         return $response->json();
