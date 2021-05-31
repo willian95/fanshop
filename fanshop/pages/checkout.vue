@@ -63,22 +63,25 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <td>Producto</td>
-                                            <td style="width: 200px;"></td>
-                                            <td>Precio unitario</td>
-                                            <td>Cantidad</td>
-                                            <td>Total</td>
-                                            <td></td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="null" :showErase="false" :showUpdateAmount="false" :dolarPrice="configuration.dolar_price"/>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <td>Producto</td>
+                                                <td style="min-width: 200px;"></td>
+                                                <td>Proveedor</td>
+                                                <td>Precio unitario</td>
+                                                <td>Cantidad</td>
+                                                <td>Total</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <CartRow v-for="product in products" v-bind:key="product.id" :cart="product" :product="JSON.parse(product.product.object)" :erase="null" :showErase="false" :showUpdateAmount="false" :dolarPrice="configuration.dolar_price"/>
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -333,12 +336,12 @@
             async getCardToken(){
 
                 let $form = document.getElementById('paymentForm');
-
+                
                 if(this.checkFields()){
                     
                     this.errors = []
                     this.loading = true
-
+                  
                     let formData = new FormData()
                     formData.append("name", this.name)
                     formData.append("lastname", this.lastname)
@@ -354,15 +357,15 @@
                         this.loading = false
                         if(res.data.success == true){
 
-                            this.$swal({
+                            /*this.$swal({
                                 text: res.data.msg,
                                 icon:"success"
                             }).then(ans => {
 
-                                window.Mercadopago.createToken($form, this.setCardTokenAndPay);
+                                
 
-                            })
-
+                            })*/
+                            window.Mercadopago.createToken($form, this.setCardTokenAndPay);
                             return true
 
                         }else{
@@ -397,7 +400,10 @@
                     //form.appendChild(card);
                     this.token = response.id
                     this.doSubmit = true
+                   
                     this.checkout()
+                    
+                    
                 } else {
                     alert("Verify filled data!\n"+JSON.stringify(response, null, 4));
                 }
@@ -437,7 +443,7 @@
 
             },
 
-            async checkFields(){
+            checkFields(){
 
                 let error = false
 
@@ -448,7 +454,7 @@
                         position:"top-end",
                         text: "Debes verificar tu email para continuar",
                     })
-                    error = true
+                    return false
                 }
 
                 if(this.email == ""){
@@ -458,7 +464,7 @@
                         position:"top-end",
                         text: "Email es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(this.phone == "" || this.phone == null){
@@ -468,7 +474,7 @@
                         position:"top-end",
                         text: "Teléfono es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(this.dni == "" || this.dni == null){
@@ -478,7 +484,7 @@
                         position:"top-end",
                         text: "DNI es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(this.address == "" || this.address == null){
@@ -488,7 +494,7 @@
                         position:"top-end",
                         text: "Dirección es requerida",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("docType").value == ""){
@@ -498,7 +504,7 @@
                         position:"top-end",
                         text: "Tipo de documento es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("cardNumber").value == ""){
@@ -508,7 +514,7 @@
                         position:"top-end",
                         text: "Número de tarjeta es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("docNumber").value == ""){
@@ -518,7 +524,7 @@
                         position:"top-end",
                         text: "Número de documento es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("cardholderName").value == ""){
@@ -528,7 +534,7 @@
                         position:"top-end",
                         text: "Titular de la tarjeta es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("cardExpirationMonth").value == ""){
@@ -538,7 +544,7 @@
                         position:"top-end",
                         text: "Mes de expiración de la tarjeta es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("cardExpirationYear").value == ""){
@@ -548,7 +554,7 @@
                         position:"top-end",
                         text: "Año de expiración de la tarjeta es requerido",
                     })
-                    error = true
+                    return false
                 }
 
                 if(document.getElementById("cardExpirationMonth").value < 0 || document.getElementById("cardExpirationMonth").value > 12){
@@ -558,7 +564,7 @@
                         position:"top-end",
                         text: "Mes de expiración de la tarjeta no es válido",
                     })
-                    error = true
+                    return false
                 }
                 /*let currentTime = new Date()
                 if(document.getElementById("cardExpirationYear").value < currentTime.getFullYear().substring(1, 3)){
@@ -591,13 +597,8 @@
                     error = true
                 }*/
 
-                if(error == true){
-                    return false
-                }else{
+                return true
 
-                    this.updateProfile()
-
-                }
             },
 
             isNumber(evt) {
@@ -609,10 +610,6 @@
                     return true;
                 }
             },
-
-            async updateProfile(){
-
-            }
 
 
 
@@ -644,3 +641,11 @@
 
     }
 </script>
+
+<style>
+
+    .img-product{
+        height: unset !important;
+    }
+
+</style>

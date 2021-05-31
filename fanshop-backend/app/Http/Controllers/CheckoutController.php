@@ -9,6 +9,9 @@ use App\Models\PurchaseProduct;
 use App\Models\MercadoPagoDetailedStatusMessage;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Configuration;
+use App\Models\Configuration as Config;
+use Illuminate\Support\Facades\Log;
 use Auth;
 
 use MercadoPago\Item;
@@ -22,15 +25,31 @@ class CheckoutController extends Controller
 {
     
     function checkout(Request $request){
-     
+        
+        $requestAmazonId = "";
+        $requestAmazonResponse = "";
+        $requestWalmartId = "";
+        $requestWalmartResponse = "";
+
+
         SDK::setAccessToken(env("MP_SECRET"));
         $auth = Auth::guard('api')->user() ? Auth::guard('api')->user() : Auth::user();
 
         $this->updateUserData($request);
 
         $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
-        $requestId = $this->zincapiProductCategorize($cartProducts)->request_id;
-        $requestResponse = $this->checkForRequestCode($requestId);
+        $requestAmazonCategorize = $this->zincapiProductCategorizeAmazon($cartProducts);
+        if($requestAmazonCategorize){
+            $requestAmazonId = $requestAmazonCategorize->request_id;
+            $requestAmazonResponse = $this->checkForRequestCode($requestAmazonId);
+        }
+        
+        $requestWalmartCategorize = $this->zincapiProductCategorizeWalmart($cartProducts);
+        if($requestWalmartCategorize){
+            $requestWalmartId = $requestWalmartCategorize->request_id;
+            $requestWalmartResponse = $this->checkForRequestCode($requestWalmartId);
+        }
+
 
         $payment = new Payment();
         $payment->transaction_amount = (float)$request->transactionAmount;
@@ -61,7 +80,7 @@ class CheckoutController extends Controller
 
         if($payment->status != "rejected"){
 
-            $this->storePurchase($payment, $auth, $request, $requestId, $requestResponse);
+            $this->storePurchase($payment, $auth, $request, $requestAmazonId, $requestAmazonResponse, $requestWalmartId, $requestWalmartResponse);
 
             return response()->json(["success" => true, "msg" => $status, "title" => "Productos comprados exitosamente"]);
         }else{
@@ -79,7 +98,7 @@ class CheckoutController extends Controller
 
     }
 
-    function storePurchase($payment, $auth, $request, $requestId, $requestResponse){
+    function storePurchase($payment, $auth, $request, $requestAmazonId, $requestAmazonResponse, $requestWalmartId, $requestWalmartResponse){
 
         $purchase = new Purchase;
         $purchase->purchase_index = Str::random(40);
@@ -92,9 +111,12 @@ class CheckoutController extends Controller
         $purchase->mercado_pago_status_detail = $payment->status_detail;
         $purchase->mercado_pago_payment_method_id = $request->paymentMethodId;
         $purchase->mercado_pago_installments = $payment->installments;
-        $purchase->zinc_api_request_id = $requestId;
-        $purchase->zinc_api_code = $requestResponse->code;
-        $purchase->zinc_api_message = $requestResponse->message;
+        $purchase->zinc_api_request_id = $requestAmazonId;
+        $purchase->zinc_api_code = $requestAmazonResponse->code;
+        $purchase->zinc_api_message = $requestAmazonResponse->message;
+        $purchase->zinc_api_walmart_request_id = $requestWalmartId;
+        $purchase->zinc_api_walmart_code = $requestWalmartResponse->code;
+        $purchase->zinc_api_walmart_message = $requestWalmartResponse->message;
         $purchase->save();
 
         if($payment->status != "rejected"){
@@ -108,7 +130,6 @@ class CheckoutController extends Controller
     function storePurchasedProducts($auth, $purchase){
 
         $cartProducts = Cart::where("user_id", $auth->id)->with("product")->get();
-        $this->zincapiProductCategorize($cartProducts);
 
         foreach($cartProducts as $product){
 
@@ -145,10 +166,9 @@ class CheckoutController extends Controller
 
     }
 
-    function zincapiProductCategorize($cartProducts){
+    function zincapiProductCategorizeAmazon($cartProducts){
 
         $amazon = [];
-        $walmart = [];
         $maxPrice = 0;
 
         foreach($cartProducts as $cart){
@@ -156,89 +176,158 @@ class CheckoutController extends Controller
             if($cart->product->searchType == "amazon"){
 
                 $amazon[]=[
-                    "product_id" => $cart->product->productId,
-                    "quantity" => $cart->amount
+                    'product_id' => $cart->purchase_id,
+                    'quantity' => $cart->amount
                 ];
 
                 $maxPrice = $maxPrice + ($cart->unit_price * $cart->amount);
 
-            }else if($cart->product->searchType == "walmart"){
+            }
+
+        }
+
+        $test = $this->zincapiAmazonOrderPlacement($amazon, $maxPrice);
+        return $test;
+
+    }
+
+    function zincapiProductCategorizeWalmart($cartProducts){
+
+        $walmart = [];
+        $maxPrice = 0;
+
+        foreach($cartProducts as $cart){
+
+           if($cart->product->searchType == "walmart"){
 
                 $walmart[]=[
-                    "product_id" => $cart->product->productId,
-                    "quantity" => $cart->amount
+                    'product_id' => $cart->product->walmart_us_item_id,
+                    'quantity' => $cart->amount
                 ];
 
             }
 
         }
 
-        $test = $this->zincapiOrderPlacement($amazon, $walmart, $maxPrice);
+        $test = $this->zincapiWalmartOrderPlacement($walmart, $maxPrice);
         return $test;
 
     }
 
-    function zincapiOrderPlacement($amazon, $walmart, $maxPrice){
+    function zincapiAmazonOrderPlacement($amazon, $maxPrice){
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
-        curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
-        curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
-        
-        // SSL important
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $amazonOutput = [];
+        $walmartOutput = [];
 
+        if(count($amazon) > 0){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+            curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
+            curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
+            
+            // SSL important
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
+            $data = $this->setJson($maxPrice, $amazon, "amazon");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+
+            $amazonOutput = json_decode($output);
+            return $amazonOutput;
+        }
+
+    }
+
+    function zincapiWalmartOrderPlacement($walmart, $maxPrice){
+
+        $amazonOutput = [];
+        $walmartOutput = [];
+
+        if(count($walmart) > 0){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+            curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders");
+            curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
+            
+            // SSL important
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $data = $this->setJson($maxPrice, $walmart, "walmart");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $walmartOutput = json_decode($output);
+            return $walmartOutput;
+        }
+
+    }
+
+    function setJson($maxPrice, $order, $retailer){
+
+        if($retailer == "amazon"){
+            $retailerCredentials = '"retailer_credentials": {
+                "email": "'.Config::first()->amazon_email.'",
+                "password": "'.Config::first()->amazon_password.'",
+                "totp_2fa_key": "NFUO QOFD NXEW CY4A Z2E5 FHCB GMGL CWKN JAXE 6ZZQ 2VP5 3ECQ G63A"
+            },
+            "payment_method": {
+                "use_gift": true
+            }
+          }';
+        }else if($retailer == "walmart"){
+
+            $retailerCredentials = '"retailer_credentials": {
+                "email": "'.Config::first()->walmart_email.'",
+                "password": "'.Config::first()->walmart_password.'"
+            },"payment_method": {
+                "name_on_card": "'.Config::first()->name_on_card.'",
+                "number": "'.Config::first()->card_number.'",
+                "security_code": "'.Config::first()->card_security_code.'",
+                "expiration_month": "'.Config::first()->card_expiration_month.'",
+                "expiration_year": "'.Config::first()->card_expiration_year.'",
+                "use_gift": false
+                }
+            }';
+
+        }
+    
         $data = '{
-            "retailer": "amazon",
-            "products": '.json_encode($amazon).',
-            "max_price": '.$maxPrice.',
+            "retailer": "'.$retailer.'",
+            "products": '.json_encode($order).',
+            "max_price": "'.$maxPrice.'",
             "shipping_address": {
-              "first_name": "Darío",
-              "last_name": "Oliveira",
-              "address_line1": "8301 NW 66TH ST",
+              "first_name": "'.Config::first()->shipping_name.'",
+              "last_name": "'.Config::first()->shipping_last_name.'",
+              "address_line1": "'.Config::first()->shipping_address.'",
               "address_line2": "",
-              "zip_code": "33166",
-              "city": "MIAMI",
-              "state": "FL",
-              "country": "US",
-              "phone_number": "5168374845‬"
+              "zip_code": "'.Config::first()->shipping_zip_code.'",
+              "city": "'.Config::first()->shipping_city.'",
+              "state": "'.Config::first()->shipping_state.'",
+              "country": "'.Config::first()->shipping_country.'",
+              "phone_number": "'.Config::first()->shipping_phone_number.'"
             },
             "is_gift": false,
             "shipping_method":"cheapest",
             "billing_address": {
-              "first_name": "Darío",
-              "last_name": "Oliveira",
-              "address_line1": "8301 NW 66TH ST",
-              "address_line2": "",
-              "zip_code": "33166",
-              "city": "MIAMI",
-              "state": "FL",
-              "country": "US",
-              "phone_number": "5168374845‬"
-            },
-            "retailer_credentials": {
-              "email": "'.env("AMAZON_EMAIL").'",
-              "password": "'.env("AMAZON_PASSWORD").'",
-              "totp_2fa_key": "NFUO QOFD NXEW CY4A Z2E5 FHCB GMGL CWKN JAXE 6ZZQ 2VP5 3ECQ G63A"
-            },
-            "payment_method": {
-                "use_gift": true
-            },
-            "webhooks": {
-              "request_succeeded": "'.url('/zinc/request_succeeded').'",
-              "request_failed": "'.url('/zinc/request_failed').'",
-              "tracking_obtained": "'.url('/zinc/tracking_obtained').'",
-              "status_updated": "'.url('/zinc/status_updated').'"
-            }
-          }';
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                "first_name": "'.Config::first()->billing_name.'",
+                "last_name": "'.Config::first()->billing_last_name.'",
+                "address_line1": "'.Config::first()->billing_address.'",
+                "address_line2": "",
+                "zip_code": "'.Config::first()->billing_zip_code.'",
+                "city": "'.Config::first()->billing_city.'",
+                "state": "'.Config::first()->billing_state.'",
+                "country": "'.Config::first()->billing_country.'",
+                "phone_number": "'.Config::first()->billing_phone_number.'"
+            },';
 
-        $output = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($output);
+        $data = $data.$retailerCredentials;
+            
+        return $data;
 
     }
 

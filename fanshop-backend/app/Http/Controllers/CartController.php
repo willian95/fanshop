@@ -24,6 +24,7 @@ class CartController extends Controller
                 $product->image = $request->image;
                 $product->unit_price = $request->price;
                 $product->minimun_quantity = $request->amount;
+                $product->walmart_us_item_id = $request->walmartUsItem;
                 $product->update();
             }else{
                 $product = new Product;
@@ -33,12 +34,14 @@ class CartController extends Controller
                 $product->image = $request->image;
                 $product->minimun_quantity = $request->amount;
                 $product->unit_price = $request->price;
+                $product->walmart_us_item_id = $request->walmartUsItem;
                 $product->save();
             }
 
-            $cart = Cart::where("user_id", $auth->id)->where("product_id", $product->id)->first();
+            $cart = Cart::where("user_id", $auth->id)->where("purchase_id", $product->id)->first();
             if($cart){
 
+                $cart->purchase_id = $request->purchaseId;
                 $cart->amount = $cart->amount + 1;
                 $cart->unit_price = $product->unit_price;
                 $cart->update();
@@ -47,6 +50,7 @@ class CartController extends Controller
 
                 $cart = new Cart;
                 $cart->product_id = $product->id;
+                $cart->purchase_id = $request->purchaseId;
                 $cart->user_id = $auth->id;
                 $cart->amount = $request->amount;
                 $cart->unit_price = $product->unit_price;

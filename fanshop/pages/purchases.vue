@@ -76,9 +76,15 @@
                                 <tr v-for="product in products" v-bind:key="product.id">
                                     <td><img style="max-width: 120px;" :src="product.product.image" alt=""></td>
                                     <td>
-                                        <NuxtLink :to="{path: '/product', query: { id: product.product.productId, searchType: product.product.searchType }}" v-on:click.native="hideModal()">
-                                            <p>{{ JSON.parse(product.product.object).productTitle.substring(0, 60) }}</p>
+                                        <NuxtLink :to="{path: '/product/'+product.product.productId, query: {searchType: product.product.searchType }}" v-if="product.product.searchType == 'amazon'" v-on:click.native="hideModal()">
+                                            <p >{{ JSON.parse(product.product.object).productTitle.substring(0, 60) }}</p>
+                                            
                                         </NuxtLink>
+                                        <NuxtLink :to="{path: '/product-walmart/'+product.product.productId, query: {searchType: product.product.searchType }}" v-if="product.product.searchType == 'walmart'" v-on:click.native="hideModal()">
+                                            <p >{{ JSON.parse(product.product.object).productInfo.productTitle.substring(0, 60) }}</p>
+                                            
+                                        </NuxtLink>
+
                                     </td>
                                     <td>S. {{ product.unit_price * purchaseDolarPrice }}</td>
                                     <td>{{ product.amount }}</td>
@@ -121,8 +127,10 @@
                                         S. {{ purchase.total_peru.toFixed(2) }}
                                     </td>
                                     <td>
-                                        <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
-                                        <button @click="setTracking(purchase.trackings)" class="btn btn-info" data-toggle="modal" data-target=".trackingModal">tracking</button>
+                                        <div class="d-flex">
+                                            <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
+                                            <button @click="setTracking(purchase.trackings)" class="btn btn-info ml-2" data-toggle="modal" data-target=".trackingModal">tracking</button>
+                                        </div>
                                     </td>
                                 </tr>
                 			</tbody>

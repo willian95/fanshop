@@ -40,9 +40,10 @@ class OrderRetrieve extends Command
     public function handle()
     {
         
-        $purchases = Purchase::whereNotNull("zinc_api_request_id")->where("zinc_api_code", "request_processing")->with("purchaseProducts")->get();
+        $amazonPurchases = Purchase::whereNotNull("zinc_api_request_id")->where("zinc_api_code", "request_processing")->with("purchaseProducts")->get();
+        $walmartPurchases = Purchase::whereNotNull("zinc_api_walmart_request_id")->where("zinc_api_walmart_code", "request_processing")->with("purchaseProducts")->get();
 
-        foreach($purchases as $purchase){
+        foreach($amazonPurchases as $purchase){
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
@@ -63,10 +64,41 @@ class OrderRetrieve extends Command
             //dump($response->code);
             if($purchase->zinc_api_code != $response->code){
 
-                
 
                 $purchase->zinc_api_code = $response->code;
                 $purchase->zinc_api_message = $response->message;
+                $purchase->update();
+
+                $this->sendAdminEmail($purchase);
+
+            }
+
+        }
+
+        foreach($walmartPurchases as $purchase){
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+            curl_setopt($ch, CURLOPT_URL, "https://api.zinc.io/v1/orders/".$purchase->zinc_api_request_id);
+            curl_setopt($ch, CURLOPT_USERPWD, env("ZINCAPI_TOKEN").":");
+            
+            // SSL important
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+
+            $response = json_decode($output);
+
+            $purchase = Purchase::find($purchase->id);
+            //dump($purchase->zinc_api_code);
+            //dump($response->code);
+            if($purchase->zinc_api_code != $response->code){
+
+
+                $purchase->zinc_api_walmart_code = $response->code;
+                $purchase->zinc_api_walmart_message = $response->message;
                 $purchase->update();
 
                 $this->sendAdminEmail($purchase);

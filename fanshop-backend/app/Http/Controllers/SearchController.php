@@ -20,7 +20,7 @@ class SearchController extends Controller
             $response = $this->walmartSearch($request->queryWord, $request->page);
         }
 
-        return response()->json(["success" => true, "products" => $response, "configuration" => Configuration::first()]);
+        return response()->json(["success" => true, "products" => $response, "configuration" =>Configuration::select("dolar_price", "earn_percentage", "max_price_without_tax", "price_per_pound", "price_tax_percent")->first()]);
 
     }
 

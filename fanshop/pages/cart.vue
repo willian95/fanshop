@@ -14,6 +14,7 @@
                   				<tr>
                     				<td>Producto</td>
                     				<td></td>
+									<td>Proveedor</td>
                     				<td>Precio unitario</td>
                     				<td>Cantidad</td>
                     				<td>Total</td>
@@ -64,7 +65,7 @@
                   				
 								<img src="/img/mercado-pago.png" alt="" />
 							</span>
-                			<div class="text-center mt-3">
+                			<div class="text-center mt-3 d-flex">
                   				<NuxtLink :to="{ path:'/' }" class="btn btn-custom">
                     				<img
                      					 class="icon_btn"

@@ -21,10 +21,10 @@
 										<img class="icon-buscador" src="/img/search.png" alt="" />
 										<img class="icon-logo" src="/img/Amazon_logo.png" alt="" />
 									</button>
-									<!---<button type="button" @click="querySearch('walmart')" style="visibility: hidden;">
+									<button type="button" @click="querySearch('walmart')">
 										<img class="icon-buscador" src="/img/search.png" alt="" />
 										<img class="icon-logo icon-logo_wal" src="/img/walmart_logo.png" alt="" />
-									</button>--->
+									</button>
 								</div>
 							</form>
 							<li class="nav-item mr-5 pr-3">

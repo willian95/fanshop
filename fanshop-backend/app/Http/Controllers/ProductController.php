@@ -15,14 +15,14 @@ class ProductController extends Controller
             $response = null;
 
             if($request->searchType == "amazon"){
-                $response = $this->amazonProductInfo($request->id);
+                $response = $this->amazonProductInfo($request->id, $request->ref);
             }
 
             else if($request->searchType == "walmart"){
                 $response = $this->walmartProductInfo($request->id);
             }
 
-            return response()->json(["product" => $response, "configuration" => Configuration::find(1)]);
+            return response()->json(["product" => $response, "configuration" => Configuration::select("dolar_price", "earn_percentage", "max_price_without_tax", "price_per_pound", "price_tax_percent")->first()]);
         }
         catch(\Exception $e){
             return response()->json(["err" => $e->getMessage()]);
@@ -30,16 +30,21 @@ class ProductController extends Controller
 
     }   
 
-    function amazonProductInfo($id){
+    function amazonProductInfo($id, $ref){
 
         try{
 
+            $refString = "";
             $id = str_replace("https://www.amazon.com/dp/", "", $id);
 
+            if(isset($ref)){
+                $refString = '/'.$ref;
+            }
+            
             $response = Http::withHeaders([
                 'axesso-api-key' => env('AXESSO_KEY'),
                 'Content-Type' => 'application/json'
-            ])->get('http://api-prd.axesso.de/amz/amazon-lookup-product?url=https://www.amazon.com/dp/'.$id);
+            ])->get('http://api-prd.axesso.de/amz/amazon-lookup-product?url=https://www.amazon.com/dp/'.$id.$refString);
             
             return $response->json();
 
@@ -55,14 +60,28 @@ class ProductController extends Controller
 
         try{
 
+            $response = [];
+
             $id = str_replace("https://www.walmart.com/ip/", "", $id);
 
-            $response = Http::withHeaders([
+            $productInfo = Http::withHeaders([
                 'axesso-api-key' => env('AXESSO_KEY'),
                 'Content-Type' => 'application/json'
             ])->get('http://api-prd2.axesso.de/wlm/walmart-lookup-product?url=https://www.walmart.com/ip/'.$id);
+
+            $searchInfo = Http::withHeaders([
+                'axesso-api-key' => env('AXESSO_KEY'),
+                'Content-Type' => 'application/json'
+            ])->get('http://api-prd2.axesso.de/wlm/walmart-search-by-keyword?keyword='.$id.'&page=1&type=text&sortBy=best_match');
             
-            return $response->json();
+            $response[] = [
+
+                "productInfo" => json_decode($productInfo->body()),
+                "searchInfo" => json_decode($searchInfo->body())
+
+            ];
+
+            return $response;
 
 
         }catch(\Exception $e){
