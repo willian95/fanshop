@@ -7,7 +7,7 @@
 			</div>
 			<VueSlickCarousel :slidesToShow="4" :dots="true" :slidesToScroll="4" :infinite="true" :responsive="responsive" v-if="products.length >0">
 				<div class="main-destacdo_item" v-for="product in products" v-bind:key="product.asin">
-                    <ProductCard :image="product.imgUrl" :price="product.price" :title="product.productDescription" :id="product.asin" :searchType="searchType"/>
+                    <ProductCard :image="product.imgUrl" :price="product.price" :dolarPrice="configuration.dolar_price" :earnPercentage="configuration.earn_percentage" :title="product.productDescription" :id="product.asin" :searchType="'amazon'" :walmartTitle="product.title" :walmartImage="product.imageUrl" :walmartPrice="product.primaryOffer ? (product.primaryOffer.offerPrice ? product.primaryOffer.offerPrice : (product.primaryOffer.minPrice)) : ''" :walmartId="product.productId" :walmartUsItemId="product.usItemId"/>
 				</div>
 
 			</VueSlickCarousel>
@@ -57,7 +57,8 @@
                     }
                 ],
                 products:[],
-                searchType:""
+                searchType:"",
+                configuration:""
             }
         },
         methods:{
@@ -66,6 +67,7 @@
 
                 let res = await this.$axios.get("recommendations?asin="+this.setWord()+"&searchType="+this.setSearchType())
                 this.products = res.data.recommendations.searchProductDetails.slice(0, 10)
+                this.configuration = res.data.configuration
 
             },
             setWord(){

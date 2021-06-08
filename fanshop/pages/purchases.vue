@@ -86,7 +86,7 @@
                                         </NuxtLink>
 
                                     </td>
-                                    <td>S. {{ product.unit_price * purchaseDolarPrice }}</td>
+                                    <td>S/ {{ product.unit_price * purchaseDolarPrice }}</td>
                                     <td>{{ product.amount }}</td>
                                 </tr>
                             </tbody>
@@ -124,7 +124,7 @@
                                         {{ showStatusDetail(purchase) }}
                                     </td>
                                     <td>
-                                        S. {{ purchase.total_peru.toFixed(2) }}
+                                        S/ {{ purchase.total_peru.toFixed(2) }}
                                     </td>
                                     <td>
                                         <div class="d-flex">
@@ -205,7 +205,7 @@
 
                 if(status.length > 0){
                         
-                    return status[0].description.replaceAll("/amount/", "S. "+purchase.total_peru).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
+                    return status[0].description.replaceAll("/amount/", "S/ "+purchase.total_peru).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
       
                     
                 }

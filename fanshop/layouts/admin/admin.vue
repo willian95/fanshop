@@ -62,35 +62,35 @@
 
 								<li class="menu-item" aria-haspopup="true">
 									<a href="#" class="menu-link">
-										<i class="menu-icon flaticon-home-1"></i>
+										<fa icon="home" class="mr-1"></fa>
 										<span class="menu-text">Inicio</span>
 									</a>
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
 									<NuxtLink :to="{ path: '/admin/sales'}" href="#" class="menu-link">
-										<i class="menu-icon flaticon-user-add"></i>
+										<fa icon="money-bill-wave" class="mr-1"></fa>
 										<span class="menu-text">Ventas</span>
 									</NuxtLink>
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
 									<NuxtLink :to="{ path: '/admin/adminEmail'}" href="#" class="menu-link">
-										<i class="menu-icon flaticon-user-add"></i>
+										<fa icon="envelope" class="mr-1"></fa>
 										<span class="menu-text">Email administrativos</span>
 									</NuxtLink>
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
 									<NuxtLink :to="{ path: '/admin/settings'}" href="#" class="menu-link">
-										<i class="menu-icon flaticon-user-add"></i>
+										<fa icon="cogs" class="mr-1"></fa>
 										<span class="menu-text">Configuración</span>
 									</NuxtLink>
 								</li>
 
 								<li class="menu-item" aria-haspopup="true">
 									<NuxtLink :to="{ path: '/'}" href="#" class="menu-link">
-										<i class="menu-icon flaticon-user-add"></i>
+										<fa icon="store" class="mr-1"></fa>
 										<span class="menu-text w-100">Volver a la tienda</span>
 									</NuxtLink>
 								</li>

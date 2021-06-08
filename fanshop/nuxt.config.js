@@ -2,6 +2,7 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'fanshop',
+    lang:"es",
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -64,7 +65,18 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    '@nuxtjs/fontawesome'
   ],
+
+  fontawesome: {
+
+    component:'fa',
+    icons:{
+      solid: ["faHome", "faUser", "faSignOutAlt", "faEnvelope", "faCogs", "faStore", "faMoneyBillWave"],
+      brands: false
+    }
+
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
@@ -114,7 +126,7 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en'
+      lang: 'es'
     }
   },
 

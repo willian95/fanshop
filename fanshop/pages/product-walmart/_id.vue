@@ -36,7 +36,7 @@
             <p class="medium-fs">
               Precio:
               <span
-                >S.
+                >S/
                 {{
                   ((price + price * earnPercentage) * dolarPrice).toFixed(2)
                 }}</span
@@ -58,19 +58,19 @@
           </div>
 
           <div v-if="weight > 0 && weight <= 1" class="precio-detail">
-            <p class="medium-fs">Costo de envío: S. {{ 15 * dolarPrice }}</p>
+            <p class="medium-fs">Costo de envío: S/ {{ 15 * dolarPrice }}</p>
           </div>
 
           <div v-if="weight > 1" class="precio-detail">
             <p class="medium-fs">
-              Costo de envío: S.
+              Costo de envío: S/
               {{ (weightPrice * dolarPrice).toFixed(2) }}
             </p>
           </div>
 
           <div class="precio-detail">
             <p class="large-fs">
-              Total: S. {{ (total * this.dolarPrice).toFixed(2) }}
+              Total: S/ {{ (total * this.dolarPrice).toFixed(2) }}
             </p>
           </div>
 

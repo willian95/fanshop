@@ -36,7 +36,7 @@
             <p class="medium-fs">
               Precio:
               <span
-                >S.
+                >S/
                 {{
                   ((price + (price * earnPercentage)) * dolarPrice).toFixed(2)
                 }}</span
@@ -45,7 +45,7 @@
           </div>
           <div v-if="price > maxPriceWithoutTax" class="precio-detail">
             <p class="medium-fs">
-              Impuesto: S. {{ Math.ceil((overpriceTax) * dolarPrice) }} 
+              Impuesto: S/ {{ Math.ceil((overpriceTax) * dolarPrice) }} 
             </p>
             <p class="small-fs">
               Toda comprar mayor a {{ maxPriceWithoutTax }} USD tendrá un
@@ -58,19 +58,19 @@
           </div>
 
           <div v-if="weight > 0 && weight <= 1" class="precio-detail">
-            <p class="medium-fs">Costo de envío: S. {{ 15 * dolarPrice }}</p>
+            <p class="medium-fs">Costo de envío: S/ {{ 15 * dolarPrice }}</p>
           </div>
 
           <div v-if="weight > 1" class="precio-detail">
             <p class="medium-fs">
-              Costo de envío: S.
+              Costo de envío: S/
               {{ (weightPrice * dolarPrice).toFixed(2) }}
             </p>
           </div>
 
           <div class="precio-detail">
             <p class="large-fs">
-              Total: S. {{ Math.ceil(total * this.dolarPrice) }}
+              Total: S/ {{ Math.ceil(total * this.dolarPrice) }}
             </p>
           </div>
 
@@ -103,6 +103,9 @@
             >
           </div>
         </div>
+        <p>¿Deseas traducir este sitio?</p>
+        <p>Paso 1: Haz click secundario</p>
+        <p>Paso 2:Y haz click en <strong>Traducir a español</strong></p>
       </div>
       <div class="col-md-12">
         <h3>Características:</h3>
@@ -170,6 +173,9 @@
           :fetch="setId"
           :productCategory="productCategory"
           v-if="productCategory != ''"
+          :dolarPrice="dolarPrice"
+          :earnPercentage="earnPercentage"
+
         />
       </div>
     </div>
@@ -187,6 +193,11 @@ import Recommendations from "../../components/Recommendations";
 import { mapGetters } from "vuex";
 
 export default {
+  head: {
+    htmlAttrs: {
+      lang: 'es'
+    },
+  },
   name: "productDetail",
   components: { VueSlickCarousel, Loading, Recommendations },
   data() {
@@ -297,6 +308,12 @@ export default {
     setId(id) {
       this.fetch(id, this.searchType);
     },
+    async translations(allText){
+
+      let res = await this.$axios.post("product/translation", allText)
+      console.log(res)
+
+    },
     async fetch(id, searchType, ref) {
       this.clear();
       this.loading = true;
@@ -327,27 +344,32 @@ export default {
           
           this.price = res.data.product.price
         }
+        else{
 
-        if(res.data.product.retailPrice != 0){
+          if(res.data.product.retailPrice != 0){
     
-          this.price = res.data.product.retailPrice
-        }
-
-        if(res.data.product.salePrice != 0){
-      
-          this.price = res.data.product.salePrice
-        }
-
-        if(res.data.product.salePrice != 0 && res.data.product.retailPrice != 0){
-          
-          if(res.data.product.retailPrice < res.data.product.salePrice){
-      
             this.price = res.data.product.retailPrice
-          }else{
-            
+          }
+
+          if(res.data.product.salePrice != 0){
+        
             this.price = res.data.product.salePrice
           }
+
+          if(res.data.product.salePrice != 0 && res.data.product.retailPrice != 0){
+            
+            if(res.data.product.retailPrice < res.data.product.salePrice){
+        
+              this.price = res.data.product.retailPrice
+            }else{
+              
+              this.price = res.data.product.salePrice
+            }
+          }
+
         }
+
+        
 
         this.calculateTaxes(res);
         this.checkAvailability();
@@ -366,6 +388,17 @@ export default {
           //localStorage.removeItem("variations")
         }
         
+
+        let allText = [
+          {
+            "title": this.title,
+            "description": this.description,
+            "features": this.features,
+            "productDetails": this.productDetails
+          }
+        ]
+
+        this.translations(allText)
 
       } else {
         this.error = true;

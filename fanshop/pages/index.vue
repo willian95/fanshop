@@ -22,13 +22,13 @@
 
         <AboutUs />
 
-        <!--<HighlightedProducts :title="'Productos destacados'" />-->
+        <HighlightedProducts :title="'Productos destacados'" />
 
         <Advertisement />
 
         <!--<Offers />-->
 
-        <!--<HighlightedProducts :title="'Popular en la tienda'" />-->
+        <HighlightedProducts :title="'Popular en la tienda'" />
 
     </div>
 

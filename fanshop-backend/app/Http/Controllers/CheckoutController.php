@@ -158,7 +158,7 @@ class CheckoutController extends Controller
 
         $description = MercadoPagoDetailedStatusMessage::where("status", $status)->first()->description;
 
-        $description = str_replace("/amount/", "S. ".$payment->transaction_amount, $description);
+        $description = str_replace("/amount/", "S/ ".$payment->transaction_amount, $description);
         $description = str_replace("/payment_method_id/", $payment->payment_method_id, $description);
         $description = str_replace("/installments/", $payment->payment_method_id, $description);
 

@@ -12,12 +12,12 @@
                     <a class="card-producto" @click="fetch(product.asin)">
                         <div class="card-content">
                             <div class="card-producto-img">	
-                                <p class="btn-custom" >Añadir al carrito</p>
+                                <p class="btn-custom" >Ver producto</p>
                                 <img :src="product.imgUrl" class="card-content-img" alt="">
                             </div>
                             <div class="card-producto-content">
                                 <h4 class="title-producto">{{ product.productDescription.substring(0, 40) }}</h4>
-                                <span class="price">$ {{ product.price }}</span>
+                                <span v-if="searchType == 'amazon'" class="price">S/ {{ ((product.price + (product.price * parseFloat(earnPercentage)))*parseFloat(dolarPrice)).toFixed(2) }}</span>
                             </div>
                         </div>
                     </a>
@@ -44,7 +44,9 @@
             "asin":String,
             "searchType":String,
             "fetch":Function,
-            "productCategory":String
+            "productCategory":String,
+            "dolarPrice":String,
+            "earnPercentage":String
         },
         data(){
             return{

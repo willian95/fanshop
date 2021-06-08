@@ -10,7 +10,7 @@
                 <div class="card-producto-content">
                     <h4 class="title-producto" v-if="searchType == 'amazon'">{{ title.substring(0, 40) }}</h4>
 
-                    <span v-if="searchType == 'amazon'" class="price">S. {{ ((price + (price * earnPercentage))*dolarPrice).toFixed(2) }}</span>
+                    <span v-if="searchType == 'amazon'" class="price">S/ {{ ((price + (price * earnPercentage))*dolarPrice).toFixed(2) }}</span>
                 </div>
             </div>
         </NuxtLink>
@@ -23,7 +23,7 @@
                 <div class="card-producto-content">
                     <h4 class="title-producto" v-if="searchType == 'walmart'" v-html="walmartTitle"></h4>
 
-                    <span v-if="searchType == 'walmart'" class="price">S. {{ ((walmartPrice + (walmartPrice * earnPercentage))*dolarPrice).toFixed(2) }}</span>
+                    <span v-if="searchType == 'walmart'" class="price">S/ {{ ((walmartPrice + (walmartPrice * earnPercentage))*dolarPrice).toFixed(2) }}</span>
                 </div>
             </div>
         </NuxtLink>

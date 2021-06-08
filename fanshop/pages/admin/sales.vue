@@ -64,7 +64,7 @@
                                     <td>{{ purchase.user.name }} {{ purchase.user.lastname }}</td>
                                     <td>{{ purchase.user.email }}</td>
                                     <td>
-                                        S. {{ Math.ceil(purchase.total * 3.63) }}
+                                        S/ {{ Math.ceil(purchase.total * 3.63) }}
                                     </td>
                                     <td>
                                         <button @click="setProducts(purchase)" class="btn btn-info" data-toggle="modal" data-target=".productsModal">ver</button>
@@ -153,7 +153,7 @@
 
                 if(status.length > 0){
                         
-                    return status[0].description.replaceAll("/amount/", "S. "+Math.ceil(purchase.total * 3.63)).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
+                    return status[0].description.replaceAll("/amount/", "S/ "+Math.ceil(purchase.total * 3.63)).replaceAll("/payment_method_id/", purchase.mercado_pago_payment_method_id).replaceAll("/installments/", purchase.mercado_pago_installments)
                     
                 }
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\EmailAccountController;
 use App\Http\Controllers\Admin\ConfigurationsController;
+use App\Http\Controllers\TranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,8 @@ Route::post("restore-password", [PasswordRestoreController::class, "restore"]);
 Route::post("update-password", [PasswordRestoreController::class, "updatePassword"]);
 
 Route::get("recommendations", [RecommendationController::class, "getRecommendations"]);
+
+Route::post("product/translation", [TranslationController::class, "translate"]);
 
 Route::group([
 

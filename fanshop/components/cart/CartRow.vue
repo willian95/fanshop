@@ -34,9 +34,9 @@
         </td>
 
         <td>{{ cart.product.searchType }}</td>
-        <td>S. {{ (cart.unit_price * dolarPrice).toFixed(2) }}</td>
+        <td>S/ {{ (cart.unit_price * dolarPrice).toFixed(2) }}</td>
         <td> <!--<button class="btn btn-info" @click="updateAmount(cart.id,'add')"> + </button>--> {{ cart.amount }} <span v-if="showUpdateAmount == true"><button @click="updateAmount(cart.id,'substract')" v-if="cart.amount - 1 >= cart.product.minimun_quantity" class="btn btn-info"> - </button></span></td>
-        <td class="text-center"><span>S. {{ (cart.unit_price * dolarPrice * cart.amount).toFixed(2) }}</span></td>
+        <td class="text-center"><span>S/ {{ (cart.unit_price * dolarPrice * cart.amount).toFixed(2) }}</span></td>
         <td>
 
             <button v-if="showErase" class="btn btn-danger" @click="erase(cart.id)">X</button>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Configuration;
 
 class RecommendationController extends Controller
 {
@@ -14,7 +15,7 @@ class RecommendationController extends Controller
             $response = $this->amazonRecommendation($request->asin);
         }
 
-        return response()->json(["recommendations" => $response]);
+        return response()->json(["recommendations" => $response, "configuration" =>Configuration::select("dolar_price", "earn_percentage", "max_price_without_tax", "price_per_pound", "price_tax_percent")->first()]);
 
     }
 

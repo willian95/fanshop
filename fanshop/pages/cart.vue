@@ -58,7 +58,7 @@
                 			</div>-->
 							<div class="pedido-item">
                   				<p>Total</p>
-                  				<span>S. {{ total * configuration.dolar_price }}</span>
+                  				<span>S/ {{ total * configuration.dolar_price }}</span>
                 			</div>
 
                 			<span class="metodo-img" style="align-items: flex-start">
